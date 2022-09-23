@@ -1,6 +1,11 @@
 
 /**
- * main.c
+ * MDU ES Lab1 Assignment1
+ * Button input. Write a program to start blinking LEDs as an action of button events.
+ * The LED should start blinking after you press the button.
+ *  Josep Naranjo
+ *  &
+ *  Santiago Escobar
  */
 
 

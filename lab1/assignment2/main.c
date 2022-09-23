@@ -1,6 +1,6 @@
 
 /**
- * Lab1 Assignment2
+ * MDU ES Lab1 Assignment2
  * Write a program that uses a button to light a LED.
  * When the button is pressed the LED should be lit.
  * When the button is released the LED should go off.
@@ -8,6 +8,9 @@
  * Pressing and releasing the button once should light the LED.
  * The next press/release cycle should turn the LED off.
  *
+ *  Josep Naranjo
+ *  &
+ *  Santiago Escobar
  */
 
 
