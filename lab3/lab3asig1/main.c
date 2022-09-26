@@ -1,49 +1,94 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "driverlib/gpio.h"
-#include "driverlib/rom_map.h"
-#include "driverlib/sysctl.h"
-#include "drivers/buttons.h"
-#include "drivers/pinout.h"
+/*
+ * Imports
+ */
+#define EXT_CLOCK_F 32768
+#define NUMBER_OF_INTS 60
 
-// The error routine that is called if the driver library
-// encounters an error.
-#ifdef DEBUG
-void
-__error__(char *pcFilename, uint32_t ui32Line)
+#include "timerManager.h"
+
+static volatile uint32_t g_ui32Counter = 0;
+
+void ConfigureUART(void)
 {
-    while(1);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
+    {
+    }
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
+    UARTStdioConfig(0, 115200, 16000000);
 }
-#endif
+
+extern void Timer0AIntHandler(void)
+{
+    //
+    // Clear the timer interrupt flag.
+    //
+    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+    //
+    // Update the periodic interrupt counter.
+    //
+    g_ui32Counter++;
+
+    //
+    // Once NUMBER_OF_INTS interrupts have been received, turn off the
+    // TIMER0B interrupt.
+    //
+    if (g_ui32Counter == NUMBER_OF_INTS)
+    {
+        //
+        // Disable the Timer0B interrupt.
+        //
+        IntDisable(INT_TIMER0A);
+
+        //
+        // Turn off Timer0B interrupt.
+        //
+        TimerIntDisable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+        //
+        // Clear any pending interrupt flag.
+        //
+        TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    }
+}
 
 // Main Function
 int main(void)
 {
-    unsigned char ucDelta, ucState;
+    uint32_t ui32PrevCount = 0;
+    uint32_t ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL
+            | SYSCTL_CFG_VCO_480),
+    16000);
 
-    // Configure the device pins.
-    PinoutSet(false, false);
+    ConfigureUART();
 
-    // Initialize the button driver.
-    ButtonsInit();
+    periphEnable(SYSCTL_PERIPH_TIMER0);
+    configTimer(TIMER0_BASE);
+    setTimerValue(TIMER0_BASE, ui32SysClock);
 
-    // Enable the GPIO pin for the LED (PN0).
-    // Set the direction as output, and
-    // enable the GPIO pin for digital function.
-    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0);
+    // TODO: make API
+    IntMasterEnable();
+    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    IntRegister(INT_TIMER0A, Timer0AIntHandler);
+    g_ui32Counter = 0;
+    IntEnable(INT_TIMER0A);
+    // end TODO
 
-    // Loop forever.
+    enableTimer(TIMER0_BASE);
+
     while (1)
     {
-        // Poll the buttons.
-        ucState = ButtonsPoll(&ucDelta, 0);
-
-        if (BUTTON_PRESSED(RIGHT_BUTTON, ucState, ucDelta))
-            // Turn on D1.
-            LEDWrite(CLP_D1, 1);
-        if (BUTTON_PRESSED(LEFT_BUTTON, ucState, ucDelta))
-            // Turn off D1.
-            LEDWrite(CLP_D1, 0);
+        if (g_ui32Counter != ui32PrevCount)
+        {
+            UARTprintf("Segundo: %d\n", g_ui32Counter);
+            ui32PrevCount = g_ui32Counter;
+        }
     }
+
+    return 0;
 }
