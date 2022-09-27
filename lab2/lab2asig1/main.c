@@ -1,6 +1,8 @@
 //*****************************************************************************
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
@@ -11,30 +13,57 @@
 #include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
 
-/**
- * Configurations
- */
+
+//***********************************************************************
+//                       Configurations
+//***********************************************************************
 // Configure the UART.
 void ConfigureUART(void)
 {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA); // Enable the pins of GPIOA
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0); // Enable the UART 0
-    GPIOPinConfigure(GPIO_PA0_U0RX); // Configure pinout A0
-    GPIOPinConfigure(GPIO_PA1_U0TX); // Configure pinout A1
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
+    {
+    }
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1); // Configure pins for use by UART peripheral
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC); // Set the baud clock source for the specified UART
     UARTStdioConfig(0, 115200, 16000000); // Configure the UART console
 }
+
+
 
 /**
  * main.c
  */
 int main(void)
 {
-
-    // Call to config. function defined before
     ConfigureUART();
 
+    uint32_t ui32Len= 6;
+    char pcBuf;
+    float inputNumber;
+
+    while (1)
+    {
+//        while (!UARTCharsAvail(UART0_BASE))       {       }
+//        UARTCharPut(UART0_BASE, UARTCharGet(UART0_BASE));
+//        UARTCharGetNonBlocking(UART0_BASE)
+
+        UARTprintf("Insert light percentage values between 0 and 100 (NaN recognized as 0 , >100 values as 100\n");
+        UARTgets(&pcBuf, ui32Len);
+        inputNumber = strtof (&pcBuf, NULL ); //&end
+
+        if(inputNumber <= 0){
+            inputNumber = 0.0f;
+        }else if (inputNumber >= 100){
+            inputNumber = 100.0f;
+        }
+        UARTprintf("%d \n", (int) inputNumber);
+
+    }
+/*
     // Set the clock frequency
     float pwm_word;
     uint32_t systemClock;
@@ -64,6 +93,7 @@ int main(void)
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, pwm_word / 100); // Set the PWM generator pulse width
     PWMGenEnable(PWM0_BASE, PWM_GEN_1); // Enable the PWM generator
     PWMOutputState(PWM0_BASE, PWM_OUT_2_BIT, true); // Enable the output of PWM0
+    */
 
     /*
      SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -77,13 +107,20 @@ int main(void)
      (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
      */
 
-    unsigned char inputBuffer;
-
-    while (1)
-    {
-        inputBuffer = UARTCharGet(UART0_BASE);
-        UARTprintf(inputBuffer);
-    }
-
-    return 0;
+     return 0;
 }
+
+
+//*****************************************************************************
+//                 Reference
+//*****************************************************************************
+//
+//********uartstdio functions
+//        UARTStdioConfig(ui32PortNum, ui32Baud, ui32SrcClock);
+//        UARTwrite(*pcBuf,ui32Len);
+//        UARTgets(*pcBuf, ui32Len);
+//        UARTgetc();
+//        UARTvprintf(*pcString, vaArgP);
+//        UARTprintf(*pcString, *pcString2);
+//********
+
