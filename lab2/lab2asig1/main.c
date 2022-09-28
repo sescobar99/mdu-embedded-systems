@@ -12,7 +12,7 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
-
+#include "drivers/pinout.h"
 
 //***********************************************************************
 //                       Configurations
@@ -32,8 +32,6 @@ void ConfigureUART(void)
     UARTStdioConfig(0, 115200, 16000000); // Configure the UART console
 }
 
-
-
 /**
  * main.c
  */
@@ -41,29 +39,10 @@ int main(void)
 {
     ConfigureUART();
 
-    uint32_t ui32Len= 6;
+    uint32_t ui32Len = 6;
     char pcBuf;
-    float inputNumber;
+    float inputNumber = 0.0f;
 
-    while (1)
-    {
-//        while (!UARTCharsAvail(UART0_BASE))       {       }
-//        UARTCharPut(UART0_BASE, UARTCharGet(UART0_BASE));
-//        UARTCharGetNonBlocking(UART0_BASE)
-
-        UARTprintf("Insert light percentage values between 0 and 100 (NaN recognized as 0 , >100 values as 100\n");
-        UARTgets(&pcBuf, ui32Len);
-        inputNumber = strtof (&pcBuf, NULL ); //&end
-
-        if(inputNumber <= 0){
-            inputNumber = 0.0f;
-        }else if (inputNumber >= 100){
-            inputNumber = 100.0f;
-        }
-        UARTprintf("%d \n", (int) inputNumber);
-
-    }
-/*
     // Set the clock frequency
     float pwm_word;
     uint32_t systemClock;
@@ -90,26 +69,48 @@ int main(void)
     // PWM_GEN_MODE_NO_SYNC: set a asynch gen.
     // PWM_GEN_MODE_DBG_RUN: stills runs even is the processor is not
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, pwm_word); // Set the PWM generator clock period
-    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, pwm_word / 100); // Set the PWM generator pulse width
+//    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, pwm_word / 100); // Set the PWM generator pulse width
     PWMGenEnable(PWM0_BASE, PWM_GEN_1); // Enable the PWM generator
     PWMOutputState(PWM0_BASE, PWM_OUT_2_BIT, true); // Enable the output of PWM0
-    */
+
+    while (1)
+    {
+//        while (!UARTCharsAvail(UART0_BASE))       {       }
+//        UARTCharPut(UART0_BASE, UARTCharGet(UART0_BASE));
+//         (UART0_BASE)
+
+        UARTprintf(
+                "Insert light percentage values between 0 and 100 (NaN recognized as 0 , >100 values as 100\n");
+        UARTgets(&pcBuf, ui32Len);
+        inputNumber = strtof(&pcBuf, NULL); //&end
+
+        if (inputNumber <= 0)
+        {
+            inputNumber = 0.0f;
+            LEDWrite(PWM_OUT_2, 0);
+        }
+        else if (inputNumber >= 100)
+        {
+            inputNumber = 100.0f;
+        }else{
+            PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, (pwm_word / 100) * inputNumber); // Set the PWM generator pulse width
+
+        }
+
+
+        UARTprintf("%d \n", (int) inputNumber);
+
+    }
 
     /*
-     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-
-     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
-     {
-     }
 
      UARTConfigSetExpClk(
      UART0_BASE, SysCtlClockGet(), 38400,
      (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
      */
 
-     return 0;
+    return 0;
 }
-
 
 //*****************************************************************************
 //                 Reference
