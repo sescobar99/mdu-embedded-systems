@@ -17,16 +17,16 @@ static void configureUART(void)
     UARTStdioConfig(0, 115200, 16000000);
 }
 
-void initializeSW ()
+void initializeSW()
 {
     configureUART();
     configureTimer();
     configureInterruptions();
 }
 
-void startSW()
+void startSW(uint32_t initialLoad)
 {
-    startCounting(0);
+    startCounting(initialLoad);
 }
 
 void stopSW()
@@ -34,8 +34,14 @@ void stopSW()
     abortCounting();
 }
 
-void resetSW()
+void resetSW(uint32_t initialLoad)
 {
     abortCounting();
-    startCounting(0);
+    startCounting(initialLoad);
+}
+
+void printSWOut()
+{
+    UARTprintf("%u : %u : %u \n", (secondsCounter / 3600) % 24,
+               (secondsCounter / 60) % 60, secondsCounter % 60);
 }

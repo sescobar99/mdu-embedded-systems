@@ -5,6 +5,7 @@
  */
 static void ConfigureUART(void);
 void initializeSW();
-void startSW();
+void startSW(uint32_t initialLoad);
 void stopSW();
-void resetSW();
+void resetSW(uint32_t initialLoad);
+void printSWOut();

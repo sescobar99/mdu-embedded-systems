@@ -40,8 +40,11 @@ void startCounting(uint32_t initialLoad)
 void abortCounting()
 {
     // Interruption disabling
-    TimerDisable(TIMER0_BASE, TIMER_A);
-    started = false;
+    if (started)
+    {
+        TimerDisable(TIMER0_BASE, TIMER_A);
+        started = false;
+    }
 }
 
 // Interrrupt handler
