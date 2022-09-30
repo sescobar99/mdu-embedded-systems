@@ -11,7 +11,6 @@
 	<rts value=""/>
 	<createSlaveProjects value=""/>
 	<ignoreDefaultDeviceSettings value="true"/>
-	<origin value="C:\ti\ccs831\ccsv8\eclipse\plugins\com.ti.ccstudio.energia.core_8.2.0.201810301800\templates\blank.ino"/>
+	<origin value="c:\Users\josep\Desktop\lab2_assignment2\lab2_assignment2.ino"/>
 	<filesToOpen value="lab2_assignment2.ino"/>
-	<isTargetManual value="false"/>
 </projectOptions>

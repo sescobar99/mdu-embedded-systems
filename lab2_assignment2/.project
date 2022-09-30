@@ -5,7 +5,6 @@
 	<projects>
 		<project>tivac_EK-TM4C1294XL_core</project>
 		<project>tivac_EK-TM4C1294XL_SPI</project>
-		<project>tivac_EK-TM4C1294XL_EduBPMKII_Screen</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

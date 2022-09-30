@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := C:/Users/DELL/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620
+CG_TOOL_ROOT := C:/Users/josep/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -14,8 +14,7 @@ ORDERED_OBJS += \
 "./lab2_assignment2.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,--start-group \
--Wl,-T"C:/Users/DELL/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/variants/EK-TM4C1294XL/lm4fcpp_snowflake.ld" \
--ltivac_EK-TM4C1294XL_EduBPMKII_Screen \
+-Wl,-T"C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/variants/EK-TM4C1294XL/lm4fcpp_snowflake.ld" \
 -ltivac_EK-TM4C1294XL_SPI \
 -ltivac_EK-TM4C1294XL_core \
 -ldriverlib \
@@ -148,22 +147,21 @@ all: $(OBJS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "lab2_assignment2.out" secondary-outputs
 
 dependents:
-	-cd C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_core/Debug && $(MAKE) all
-	-cd C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_SPI/Debug && $(MAKE) all
-	-cd C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_EduBPMKII_Screen/Debug && $(MAKE) all
+	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug && $(MAKE) all
+	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug && $(MAKE) all
 
 # Tool invocations
-lab2_assignment2.out: $(OBJS) $(GEN_CMDS) C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_core/Debug/libtivac_EK-TM4C1294XL_core.a C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_SPI/Debug/libtivac_EK-TM4C1294XL_SPI.a C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_EduBPMKII_Screen/Debug/libtivac_EK-TM4C1294XL_EduBPMKII_Screen.a
+lab2_assignment2.out: $(OBJS) $(GEN_CMDS) C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug/libtivac_EK-TM4C1294XL_core.a C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug/libtivac_EK-TM4C1294XL_SPI.a
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: GNU Linker'
-	"C:/Users/DELL/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-gcc.exe" -Dprintf=iprintf -DF_CPU=120000000L -DENERGIA_EK_TM4C1294XL -DENERGIA_ARCH_TIVAC -DENERGIA=23 -DARDUINO=10610 -Os -ffunction-sections -fdata-sections -g -gdwarf-3 -gstrict-dwarf -w -Wall --param max-inline-insns-single=500 -mabi=aapcs -march=armv7e-m -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,-Map,"lab2_assignment2.map" --entry ResetISR -nostartfiles -nostdlib -Wl,--gc-sections -L"C:/Users/DELL/Desktop/ES Lab/tivac_EK-TM4C1294XL_EduBPMKII_Screen/Debug" -L"C:/Users/DELL/Desktop/ES Lab/tivac_EK-TM4C1294XL_SPI/Debug" -L"C:/Users/DELL/Desktop/ES Lab/tivac_EK-TM4C1294XL_core/Debug" -L"C:/Users/DELL/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib" -Os -specs=nano.specs -specs=rdimon.specs -specs=nosys.specs -Wl,--check-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common -fsingle-precision-constant -o"lab2_assignment2.out" $(ORDERED_OBJS)
+	"C:/Users/josep/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-gcc.exe" -Dprintf=iprintf -DF_CPU=120000000L -DENERGIA_EK_TM4C1294XL -DENERGIA_ARCH_TIVAC -DENERGIA=23 -DARDUINO=10610 -Os -ffunction-sections -fdata-sections -g -gdwarf-3 -gstrict-dwarf -w -Wall --param max-inline-insns-single=500 -mabi=aapcs -march=armv7e-m -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,-Map,"lab2_assignment2.map" --entry ResetISR -nostartfiles -nostdlib -Wl,--gc-sections -L"C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug" -L"C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug" -L"C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib" -Os -specs=nano.specs -specs=rdimon.specs -specs=nosys.specs -Wl,--check-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common -fsingle-precision-constant -o"lab2_assignment2.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 lab2_assignment2.bin: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: GNU Objcopy Utility'
-	"C:/Users/DELL/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-objcopy.exe" -O binary $(EXE_OUTPUTS__QUOTED) "lab2_assignment2.bin"
+	"C:/Users/josep/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-objcopy.exe" -O binary $(EXE_OUTPUTS__QUOTED) "lab2_assignment2.bin"
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
@@ -180,9 +178,8 @@ secondary-outputs: $(BIN_OUTPUTS)
 
 .PHONY: all clean dependents
 .SECONDARY:
-C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_core/Debug/libtivac_EK-TM4C1294XL_core.a:
-C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_SPI/Debug/libtivac_EK-TM4C1294XL_SPI.a:
-C:/Users/DELL/Desktop/ES\ Lab/tivac_EK-TM4C1294XL_EduBPMKII_Screen/Debug/libtivac_EK-TM4C1294XL_EduBPMKII_Screen.a:
+C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug/libtivac_EK-TM4C1294XL_core.a:
+C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug/libtivac_EK-TM4C1294XL_SPI.a:
 
 -include ../makefile.targets
 

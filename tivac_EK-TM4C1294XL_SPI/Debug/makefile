@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := C:/Users/DELL/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620
+CG_TOOL_ROOT := C:/Users/josep/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -131,7 +131,7 @@ libtivac_EK-TM4C1294XL_SPI.a: $(OBJS)
 ifneq ($(strip $(ORDERED_OBJS)),)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: GNU Librarian'
-	"C:/Users/DELL/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-ar.exe" -r "libtivac_EK-TM4C1294XL_SPI.a" $(ORDERED_OBJS)
+	"C:/Users/josep/AppData/Local/Energia15/packages/energia/tools/arm-none-eabi-gcc/6.3.1-20170620/bin/arm-none-eabi-ar.exe" -r "libtivac_EK-TM4C1294XL_SPI.a" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 endif

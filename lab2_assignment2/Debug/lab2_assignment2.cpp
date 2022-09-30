@@ -1,6 +1,6 @@
 #include "Energia.h"
 
-#line 1 "C:/Users/DELL/Desktop/ES Lab/lab2_assignment2/lab2_assignment2.ino"
+#line 1 "C:/Users/josep/gitrepos/mdu-embedded-systems/lab2_assignment2/lab2_assignment2.ino"
 
 
 
