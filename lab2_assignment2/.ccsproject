@@ -13,4 +13,5 @@
 	<ignoreDefaultDeviceSettings value="true"/>
 	<origin value="c:\Users\josep\Desktop\lab2_assignment2\lab2_assignment2.ino"/>
 	<filesToOpen value="lab2_assignment2.ino"/>
+	<isTargetManual value="false"/>
 </projectOptions>
