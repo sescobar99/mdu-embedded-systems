@@ -28,7 +28,7 @@
 //***********************************************************************
 //                       Configurations
 //***********************************************************************
-// Configure the UART.
+// Configures the UART. (Enables peripherals, configure GPIO & clock)
 void ConfigureUART(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -43,6 +43,7 @@ void ConfigureUART(void)
     UARTStdioConfig(0, 115200, 16000000); // Configure the UART console
 }
 
+//Configures the PWM. (enables peripherals, configures clock & pwm generator)
 void ConfigurePWM(float *pwm_word)
 {
     uint32_t systemClock;
@@ -91,17 +92,19 @@ int main(void)
     char menuMessage[] =
             "Insert light percentage values between 0 and 100 (NaN -> 0.0, input>100 -> 100.0)\n";
     float pwm_word;
-    float lowerValue = 0.01f;
+    float lowerValue = 0.01f; //Initially 0 .But we had some troubles with values smaller than 0.01 (3 decimal digits)
 
     ConfigureUART();
     ConfigurePWM(&pwm_word);
 
     while (1)
     {
+        //Prints message, waits for user input and parse it
         UARTprintf(menuMessage);
         UARTgets(&pcBuf, ui32Len);
         inputNumber = strtof(&pcBuf, NULL);
 
+        //Handles edge cases if inputNumber is NaN or <"lowerValue" maps it to 0. If greater than 100 maps to 100
         if (inputNumber < lowerValue|| inputNumber >= 100.0f)
         {
             inputNumber = (inputNumber < lowerValue ? 0.0f : 100.0f);
@@ -113,13 +116,14 @@ int main(void)
                          (inputNumber <= 0 ? 0 : GPIO_PIN_3));
 
         }
-        else
+        else // Handles values between (lowerValue,100)
         {
             //Enable PWM mode again
             GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_3);
             GPIOPinConfigure(GPIO_PF3_M0PWM3);
             PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, true);
 
+            //Changes LED intensity according user input
             PWMPulseWidthSet(PWM0_BASE, PWM_OUT_3,
                              (pwm_word / 100) * (inputNumber / 3)); //Pulse width is defined as the number of PWM clock ticks
         }

@@ -6,7 +6,6 @@
  *  Santiago Escobar
  */
 //*****************************************************************************
-// Core library for code-sense
 #include "Energia.h"
 #include <SPI.h>
 #include <stdbool.h>
@@ -25,44 +24,32 @@
 
 #define joystickX 2
 #define joystickY 26
-uint16_t x, y, x00, y00;
+uint16_t x, y;
 float joystickCompoundValue;
 float inputNumber;
 float pwm_word;
 uint32_t systemClock;
-//uint32_t ui32Len = 6;
-//char pcBuf;
-//char menuMessage[] =
-//        "Insert light percentage values between 0 and 100 (NaN -> 0.0, input>100 -> 100.0)\n";
+
 
 void setup()
 {
-//    x00 = 0;
-//    y00 = 0;
     inputNumber = 0.0f;
     ConfigureUART();
     ConfigurePWM(&pwm_word);
 }
 
-// Add loop code
+
 void loop()
 {
+    //Read values from the joystick and maps them between 0-128
     x = map(analogRead(joystickX), 0, 4096, 0, 128);
     y = map(analogRead(joystickY), 0, 4096, 128, 0);
 
-    x = x < 1 ? 1 : x;
-    x = x > 126 ? 126 : x;
-    y = y < 1 ? 1 : y;
-    y = y > 126 ? 126 : y;
+    //Gets the joystick distance from the center a assigns it to "inputNumber"
+    joystickCompoundValue = ((x - 64) * (x - 64) + (y - 64) * (y - 64)) >> 5;
+    inputNumber = joystickCompoundValue;
 
-//    if ((x00 != x) || (y00 != y))
-//    {
-        joystickCompoundValue = ((x - 64) * (x - 64) + (y - 64) * (y - 64))
-                >> 5;
-        inputNumber = joystickCompoundValue;
-//    }
-
-
+    //Handles edge cases if inputNumber is NaN or <=0 maps it to 0. If greater than 100 maps to 100
     if (inputNumber <= 0 || inputNumber >= 100)
     {
         inputNumber = (inputNumber <= 0 ? 0.0f : 100.0f);
@@ -74,13 +61,14 @@ void loop()
                      (inputNumber <= 0 ? 0 : GPIO_PIN_3));
 
     }
-    else
+    else // Handles values between (0,100)
     {
         //Enable PWM mode again
         GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_3);
         GPIOPinConfigure (GPIO_PF3_M0PWM3);
         PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, true);
 
+        //Changes LED intensity according user input
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_3,
                          (pwm_word / 100) * (inputNumber / 3)); //Pulse width is defined as the number of PWM clock ticks
     }
@@ -89,6 +77,7 @@ void loop()
 
 }
 
+// Configures the UART. (Enables peripherals, configure GPIO & clock)
 void ConfigureUART(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -103,6 +92,7 @@ void ConfigureUART(void)
     UARTStdioConfig(0, 115200, 16000000); // Configure the UART console
 }
 
+//Configures the PWM. (enables peripherals, configures clock & pwm generator)
 void ConfigurePWM(float *pwm_word)
 {
     uint32_t systemClock;
