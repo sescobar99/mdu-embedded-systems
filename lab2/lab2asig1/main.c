@@ -91,6 +91,7 @@ int main(void)
     char menuMessage[] =
             "Insert light percentage values between 0 and 100 (NaN -> 0.0, input>100 -> 100.0)\n";
     float pwm_word;
+    float lowerValue = 0.01f;
 
     ConfigureUART();
     ConfigurePWM(&pwm_word);
@@ -101,9 +102,9 @@ int main(void)
         UARTgets(&pcBuf, ui32Len);
         inputNumber = strtof(&pcBuf, NULL);
 
-        if (inputNumber <= 0 || inputNumber >= 100)
+        if (inputNumber < lowerValue|| inputNumber >= 100.0f)
         {
-            inputNumber = (inputNumber <= 0 ? 0.0f : 100.0f);
+            inputNumber = (inputNumber < lowerValue ? 0.0f : 100.0f);
 
             //Disable PWM and enable digital output
             PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, false);
