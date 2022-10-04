@@ -1,7 +1,8 @@
 #include <operations.h>
 
 /**
- * Interface to control the Stop Watch
+ *  API description
+ *      Allows the control of the stopwatch.
  */
 void initializeSW();
 void startSW(uint32_t initialLoad);

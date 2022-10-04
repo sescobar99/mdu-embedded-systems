@@ -1,5 +1,14 @@
 #include <operations.h>
 
+/*
+ *  name: configureTimer
+ *
+ *  Configures the system clock setting its frequency, enables
+ *  the timer peripheral, configures the timer splitting it and
+ *  setting it to periodic and loads the equivalent ticks to a
+ *  milisecond (that means that each milisecond an interruption
+ *  will be produced).
+ */
 void configureTimer()
 {
     uint32_t ui32SysClock = SysCtlClockFreqSet(
@@ -16,6 +25,13 @@ void configureTimer()
     TimerLoadSet(TIMER0_BASE, TIMER_A, ui32SysClock / 1000);
 }
 
+/**
+ *  Name: configureInterruptions
+ *
+ *  Enables the interruption master and sets the timer interruptions.
+ *  Then loads the interruption handler function defined bellow and
+ *  enable the interruptions of TIMER0A.
+ */
 void configureInterruptions ()
 {
     IntMasterEnable();
@@ -24,6 +40,13 @@ void configureInterruptions ()
     IntEnable(INT_TIMER0A);
 }
 
+/**
+ *  name: startCounting
+ *
+ *  Enables the counting of the timer after resetting the context of
+ *  variables used in the interruption handler. That will just happen
+ *  if the timer is not counting yet.
+ */
 void startCounting(uint32_t initialLoad)
 {
     // Interruption configuration
@@ -37,6 +60,12 @@ void startCounting(uint32_t initialLoad)
     }
 }
 
+/**
+ *  name: abortCounting
+ *
+ *  Disables the counting of the timer. That will just happen if the
+ *  timer is counting.
+ */
 void abortCounting()
 {
     // Interruption disabling
@@ -47,12 +76,19 @@ void abortCounting()
     }
 }
 
-// Interrrupt handler
+/**
+ *  name: Timer0AIntHandler
+ *
+ *  Handles the interruption each time is produced. It counts until the
+ *  variable milisecondsCounter gets to NUMBER_OF_MILISECONDS (defined as
+ *  1000), then it will add 1 to secondsCounter and will reset milisecondsCounter.
+ *  That way we get a real time seconds count.
+ */
 extern void Timer0AIntHandler(void)
 {
     TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // Clear the timer A flag
 
-    milisecondsCounter++;   // Update the periodic interrupt counter.
+    milisecondsCounter++;
 
     if (milisecondsCounter == NUMBER_OF_MILISECONDS)
     {

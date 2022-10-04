@@ -1,5 +1,12 @@
 #include "stopwatch.h"
 
+/**
+ *  Name: menu
+ *
+ *  Uses the methods available in UART library to print the
+ *  needed menu to show the users how to control the program
+ *  by serial inputs.
+ */
 void menu()
 {
     UARTprintf("STOPWATCH \n");
@@ -9,6 +16,12 @@ void menu()
     UARTprintf(" - To reset once is running press 3 \n");
 }
 
+/**
+ *  Name: configureUART
+ *
+ *  Configures the peripherals, the general purpose input/output
+ *  and the UART settings.
+ */
 static void configureUART(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -26,9 +39,14 @@ static void configureUART(void)
     UARTStdioConfig(0, 115200, 16000000);
 }
 
-// Main Function
+/**
+ *  Name: main
+ */
 int main(void)
 {
+    /*
+     *  Declares local variables
+     */
     uint32_t prevCounter = 0;
     uint32_t valueLen = 3;
     int32_t initialLoad = -1;
@@ -37,23 +55,37 @@ int main(void)
 
     configureUART();
 
-    initializeSW();
+    initializeSW(); // Initialize the stop watch
 
     menu();
 
+    // Running loop
     while (1)
     {
+        /*
+         *  Gets a serial input while the program stills running
+         */
         if (UARTCharsAvail(UART0_BASE))
         {
             input = UARTCharGetNonBlocking(UART0_BASE);
         }
 
+        /*
+         *  Checks if there is the need to update the counter
+         */
         if (prevCounter != secondsCounter)
         {
             printSWOut();
             prevCounter = secondsCounter;
         }
 
+        /*
+         *  Depending on the received input it does:
+         *  Input = 1:
+         *      Asks for the initial value of the counter,
+         *      the user must introduce hours, minutes, seconds.
+         *      Then starts the counter.
+         */
         if (input == '1')
         {
             initialLoad = 0;
@@ -70,12 +102,22 @@ int main(void)
 
             startSW((uint32_t) initialLoad);
         }
+        /*
+         *  Input = 2:
+         *      Stops the stop watch and shows the menu again.
+         */
         if (input == '2')
         {
             stopSW();
             initialLoad = -1;
             menu();
         }
+        /*
+         *  Input = 3:
+         *      Check if the initial load is less than 0 (if is
+         *      true the counter didn't start yet) and resets the
+         *      stop watch.
+         */
         if (input == '3')
             if (initialLoad > -1)
                 resetSW((uint32_t) initialLoad);

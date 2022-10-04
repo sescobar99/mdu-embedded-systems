@@ -22,6 +22,12 @@ volatile uint32_t secondsCounter;
 
 static bool started = false;
 
+/**
+ *  API description:
+ *      Allows the higher level API to configure the timer,
+ *      its interruptions and being able to start and abort
+ *      the counting.
+ */
 void configureTimer ();
 void configureInterruptions ();
 void startCounting (uint32_t initialLoad);
