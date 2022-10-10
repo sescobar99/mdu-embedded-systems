@@ -10,7 +10,8 @@
 //7. The driver should send one stop bit.
 //8. The driver should operate in normal channel mode.
 
-void UART_init(uint32_t ui32Base){
+void UART_init(uint32_t ui32Base)
+{
 //    Steps you need to do in the initialization:
 //    1. Reset the driver to avoid unpredictable behavior during initialization.
 //    2. Set the baud rate.
@@ -22,16 +23,48 @@ void UART_init(uint32_t ui32Base){
 //     See the microcontroller datasheet section 19.4.
 //    Note: The step 7 in the initialization in chapter 19 is missing
 
+    // Configure UART module
+    if (ui32Base == 7)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R7;
+    else if (ui32Base == 6)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R6;
+    else if (ui32Base == 5)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R5;
+    else if (ui32Base == 4)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R4;
+    else if (ui32Base == 3)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R3;
+    else if (ui32Base == 2)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R2;
+    else if (ui32Base == 1)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1;
+    else if (ui32Base == 0)
+        SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0;
+
+    // Enable the clock to the appropiate GPIO module
+    if (ui32Base == 0 || ui32Base == 2 || ui32Base == 3 || ui32Base == 4)
+        SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0;
+    else if (ui32Base == 0)
+        SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1;
+    else if (ui32Base == 5 || ui32Base == 7)
+        SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCUART_R2;
+    else if (ui32Base == 4)
+        SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCUART_R13;
+
+
 }
 
-char UART_getChar(){
+char UART_getChar()
+{
 
 }
 
-void UART_putChar(char c){
+void UART_putChar(char c)
+{
 
 }
 
-void UART_reset(){
+void UART_reset()
+{
 
 }
