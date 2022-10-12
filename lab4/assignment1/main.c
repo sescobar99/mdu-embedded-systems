@@ -8,11 +8,17 @@
  */
 
 #include "drivers/uart_driver.h"
+#include <stdbool.h>
+#include "driverlib/uart.h"
+#include "utils/uartstdio.h"
+#include <stdio.h>
+#include "drivers/pinout.h"
+#include "inc/hw_memmap.h"
 
 int main(void)
 {
     UART_init(0);
     while (1) {
-        UARTprintf("Hola mundo\n");
+        UARTCharPut(UART0_BASE, 'c');
     }
 }

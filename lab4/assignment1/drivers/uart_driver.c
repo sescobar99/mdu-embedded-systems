@@ -1,9 +1,7 @@
 #include <drivers/uart_driver.h>
 
 // debug
-#include <stdbool.h>
-#include "driverlib/uart.h"
-#include "utils/uartstdio.h"
+
 
 //1. The driver shall have the following interface:
 //2. The UART driver shall operate at 9600 baud. It is not necessary to make the baud rate
@@ -234,6 +232,7 @@ void UART_init(uint32_t ui32Base)
     {
         GPIO_PORTP_DEN_R |= (1 << 1) | (1 << 0);
     }
+
 }
 
 char UART_getChar()
