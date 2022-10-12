@@ -19,6 +19,6 @@ int main(void)
 {
     UART_init(0);
     while (1) {
-        UARTCharPut(UART0_BASE, 'c');
+        UART_putChar('c');
     }
 }
