@@ -14,55 +14,58 @@
 
 void UART_init(uint32_t ui32Base)
 {
+    UART_module = ui32Base;
+
     /*
      * INITIALIZATION
      */
 
     // Configure UART module
-    if (ui32Base == 7)
+    if (UART_module == 7)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R7;
-    else if (ui32Base == 6)
+    else if (UART_module == 6)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R6;
-    else if (ui32Base == 5)
+    else if (UART_module == 5)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R5;
-    else if (ui32Base == 4)
+    else if (UART_module == 4)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R4;
-    else if (ui32Base == 3)
+    else if (UART_module == 3)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R3;
-    else if (ui32Base == 2)
+    else if (UART_module == 2)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R2;
-    else if (ui32Base == 1)
+    else if (UART_module == 1)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1;
-    else if (ui32Base == 0)
+    else if (UART_module == 0)
         SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0;
 
     // Enable the clock to the appropiate GPIO module
-    if (ui32Base == 0 || ui32Base == 2 || ui32Base == 3 || ui32Base == 4)
+    if (UART_module == 0 || UART_module == 2 || UART_module == 3
+            || UART_module == 4)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // port A
         // AFSEL, PCTL & Digital enable
         uint32_t afsel;
         uint32_t pctl;
         uint32_t den;
-        if (ui32Base == 0)
+        if (UART_module == 0)
         {
             afsel = (1 << 0) | (1 << 1);
             pctl = (1 << 0) | (1 << 4);
             den = (1 << 0) | (1 << 1);
         }
-        else if (ui32Base == 2)
+        else if (UART_module == 2)
         {
             afsel = (1 << 6) | (1 << 7);
             pctl = (1 << 24) | (1 << 28);
             den = (1 << 6) | (1 << 7);
         }
-        else if (ui32Base == 3)
+        else if (UART_module == 3)
         {
             afsel = (1 << 4) | (1 << 5);
             pctl = (1 << 16) | (1 << 20);
             den = (1 << 4) | (1 << 5);
         }
-        else if (ui32Base == 4)
+        else if (UART_module == 4)
         {
             afsel = (1 << 2) | (1 << 3);
             pctl = (1 << 8) | (1 << 12);
@@ -72,7 +75,7 @@ void UART_init(uint32_t ui32Base)
         GPIO_PORTA_AHB_PCTL_R = pctl;
         GPIO_PORTA_AHB_DEN_R = den;
     }
-    else if (ui32Base == 1)
+    else if (UART_module == 1)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // port B
         // AFSEL
@@ -83,20 +86,20 @@ void UART_init(uint32_t ui32Base)
         GPIO_PORTB_AHB_DEN_R = (1 << 0) | (1 << 1);
 
     }
-    else if (ui32Base == 5 || ui32Base == 7)
+    else if (UART_module == 5 || UART_module == 7)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R2; // port C
         // AFSEL, PCTL & digital enable
         uint32_t afsel;
         uint32_t pctl;
         uint32_t den;
-        if (ui32Base == 5)
+        if (UART_module == 5)
         {
             afsel = (1 << 6) | (1 << 7);
             pctl = (1 << 28) | (1 << 24);
             den = (1 << 6) | (1 << 7);
         }
-        else if (ui32Base == 7)
+        else if (UART_module == 7)
         {
             afsel = (1 << 4) | (1 << 5);
             pctl = (1 << 16) | (1 << 20);
@@ -106,7 +109,7 @@ void UART_init(uint32_t ui32Base)
         GPIO_PORTC_AHB_PCTL_R = pctl;
         GPIO_PORTC_AHB_DEN_R = den;
     }
-    else if (ui32Base == 6)
+    else if (UART_module == 6)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R13; // port P
         // AFSEL
@@ -129,7 +132,7 @@ void UART_init(uint32_t ui32Base)
     // Configure serial parameters
     uint32_t lcrh = (0x3 << 5);
     // Charge UARTIBRD, UARTFBRD and UARTLCRH
-    if (ui32Base == 7)
+    if (UART_module == 7)
     {
         UART7_CTL_R &= ~(1 << 0);
         UART7_IBRD_R = uartibrd;
@@ -138,7 +141,7 @@ void UART_init(uint32_t ui32Base)
         UART7_CC_R = 0x0;
         UART7_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 6)
+    else if (UART_module == 6)
     {
         UART6_CTL_R &= ~(1 << 0);
         UART6_IBRD_R = uartibrd;
@@ -147,7 +150,7 @@ void UART_init(uint32_t ui32Base)
         UART6_CC_R = 0x0;
         UART6_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 5)
+    else if (UART_module == 5)
     {
         UART5_CTL_R &= ~(1 << 0);
         UART5_IBRD_R = uartibrd;
@@ -156,7 +159,7 @@ void UART_init(uint32_t ui32Base)
         UART5_CC_R = 0x0;
         UART5_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 4)
+    else if (UART_module == 4)
     {
         UART4_CTL_R &= ~(1 << 0);
         UART4_IBRD_R = uartibrd;
@@ -165,7 +168,7 @@ void UART_init(uint32_t ui32Base)
         UART4_CC_R = 0x0;
         UART4_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 3)
+    else if (UART_module == 3)
     {
         UART3_CTL_R &= ~(1 << 0);
         UART3_IBRD_R = uartibrd;
@@ -174,7 +177,7 @@ void UART_init(uint32_t ui32Base)
         UART3_CC_R = 0x0;
         UART3_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 2)
+    else if (UART_module == 2)
     {
         UART2_CTL_R &= ~(1 << 0);
         UART2_IBRD_R = uartibrd;
@@ -183,7 +186,7 @@ void UART_init(uint32_t ui32Base)
         UART2_CC_R = 0x0;
         UART2_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 1)
+    else if (UART_module == 1)
     {
         UART1_CTL_R &= ~(1 << 0);
         UART1_IBRD_R = uartibrd;
@@ -192,7 +195,7 @@ void UART_init(uint32_t ui32Base)
         UART1_CC_R = 0x0;
         UART1_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
-    else if (ui32Base == 0)
+    else if (UART_module == 0)
     {
         UART0_CTL_R &= ~(1 << 0);
         UART0_IBRD_R = uartibrd;
@@ -201,21 +204,31 @@ void UART_init(uint32_t ui32Base)
         UART0_CC_R = 0x0;
         UART0_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
+
+    UART_enable = 1;
 }
 
 char UART_getChar()
 {
-    char c;
-    while ((UART0_FR_R & (1 << 4)) != 0);
-    c = UART0_DR_R;
-    return c;
+    if (UART_enable)
+    {
+        char c;
+        while ((UART0_FR_R & (1 << 4)) != 0)
+            ;
+        c = UART0_DR_R;
+        return c;
+    }
 }
 
 void UART_putChar(char c)
 {
-    while ((UART0_FR_R & (1 << 5)) != 0)
-        ;
-    UART0_DR_R = c;
+    if (UART_enable)
+    {
+        while ((UART0_FR_R & (1 << 5)) != 0)
+            ;
+        UART0_DR_R = c;
+    }
+
 }
 
 void UART_reset()

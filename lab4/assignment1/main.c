@@ -19,7 +19,6 @@ int main(void)
 {
     UART_init(0);
     while (1) {
-        UART_getChar();
-
+        UART_putChar(UART_getChar());
     }
 }

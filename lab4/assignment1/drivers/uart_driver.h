@@ -1,6 +1,8 @@
 #include "inc/tm4c129encpdt.h"
 #include <stdint.h>
 
+static volatile uint32_t UART_module;
+static volatile uint8_t UART_enable = 0;
 
 /**
  * This  Function  initializes  the  UART  driver,  here  we  set  up  the  hardware module.
