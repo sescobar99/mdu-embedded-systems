@@ -1,5 +1,10 @@
 #include <drivers/uart_driver.h>
 
+// debug
+#include <stdbool.h>
+#include "driverlib/uart.h"
+#include "utils/uartstdio.h"
+
 //1. The driver shall have the following interface:
 //2. The UART driver shall operate at 9600 baud. It is not necessary to make the baud rate
 //configurable.
@@ -38,63 +43,67 @@ void UART_init(uint32_t ui32Base)
     if (ui32Base == 0 || ui32Base == 2 || ui32Base == 3 || ui32Base == 4)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // port A
-        // AFSEL
-        GPIO_PORTA_AHB_AFSEL_R |= 0xFF;
-        // PCTL
+        // AFSEL & PCTL
+        uint32_t afsel;
         uint32_t pctl;
         if (ui32Base == 0)
         {
+            afsel = (1 << 0) | (1 << 1);
             pctl = (1 << 0) | (1 << 4);
         }
         else if (ui32Base == 2)
         {
+            afsel = (1 << 6) | (1 << 7);
             pctl = (1 << 24) | (1 << 28);
         }
         else if (ui32Base == 3)
         {
+            afsel = (1 << 4) | (1 << 5);
             pctl = (1 << 16) | (1 << 20);
         }
         else if (ui32Base == 4)
         {
+            afsel = (1 << 2) | (1 << 3);
             pctl = (1 << 8) | (1 << 12);
         }
+        GPIO_PORTA_AHB_AFSEL_R |= afsel;
         GPIO_PORTA_AHB_PCTL_R |= pctl;
     }
     else if (ui32Base == 1)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // port B
         // AFSEL
-        GPIO_PORTB_AHB_AFSEL_R |= 0xFF;
+        GPIO_PORTB_AHB_AFSEL_R |= (1 << 0) | (1 << 1);
         // PCTL
-        GPIO_PORTB_AHB_PCTL_R = (1 << 0) | (1 << 4);
+        GPIO_PORTB_AHB_PCTL_R |= (1 << 0) | (1 << 4);
+
     }
     else if (ui32Base == 5 || ui32Base == 7)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R2; // port C
-        // AFSEL
-        GPIO_PORTC_AHB_AFSEL_R |= 0xFF;
-
-        // PCTL
+        // AFSEL & PCTL
+        uint32_t afsel;
         uint32_t pctl;
         if (ui32Base == 5)
         {
+            afsel = (1 << 6) | (1 << 7);
             pctl = (1 << 28) | (1 << 24);
         }
         else if (ui32Base == 7)
         {
+            afsel = (1 << 4) | (1 << 5);
             pctl = (1 << 16) | (1 << 20);
         }
+        GPIO_PORTA_AHB_AFSEL_R |= afsel;
         GPIO_PORTC_AHB_PCTL_R |= pctl;
     }
     else if (ui32Base == 6)
     {
         SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R13; // port P
         // AFSEL
-        GPIO_PORTP_AHB_AFSEL_R |= 0xFF;
+        GPIO_PORTP_AFSEL_R |= (1 << 1) | (1 << 0);
         // PCTL
         GPIO_PORTP_PCTL_R |= (1 << 0) | (1 << 4);
-        // Digital enable
-        GPIO_PORTP_AHB_DEN_R = (1 << 1) | (1 << 0);
     }
 
     /*
@@ -106,88 +115,130 @@ void UART_init(uint32_t ui32Base)
     uint32_t uartibrd = 104;
     uint32_t uartfbrd = 11;
 
-    // Disable UART
-    UART_CTL_UARTEN = 0;
     // Configure serial parameters
     uint32_t lcrh = (0x3 << 5);
     // Charge UARTIBRD, UARTFBRD and UARTLCRH
     if (ui32Base == 7)
     {
-        UART7_CTL_R &= ~(1<<0);
+        UART7_CTL_R &= ~(1 << 0);
         UART7_IBRD_R |= uartibrd;
         UART7_FBRD_R |= uartfbrd;
-        UART7_LCRH_R |= lchr;
+        UART7_LCRH_R |= lcrh;
         UART7_CC_R &= ~(0xF);
         UART7_CTL_R |= 1;
     }
     else if (ui32Base == 6)
     {
-        UART6_CTL_R &= ~(1<<0);
+        UART6_CTL_R &= ~(1 << 0);
         UART6_IBRD_R |= uartibrd;
         UART6_FBRD_R |= uartfbrd;
-        UART6_LCRH_R |= lchr;
+        UART6_LCRH_R |= lcrh;
         UART6_CC_R &= ~(0xF);
         UART6_CTL_R |= 1;
     }
     else if (ui32Base == 5)
     {
-        UART5_CTL_R &= ~(1<<0);
+        UART5_CTL_R &= ~(1 << 0);
         UART5_IBRD_R |= uartibrd;
         UART5_FBRD_R |= uartfbrd;
-        UART5_LCRH_R |= lchr;
+        UART5_LCRH_R |= lcrh;
         UART5_CC_R &= ~(0xF);
         UART5_CTL_R |= 1;
     }
     else if (ui32Base == 4)
     {
-        UART4_CTL_R &= ~(1<<0);
+        UART4_CTL_R &= ~(1 << 0);
         UART4_IBRD_R |= uartibrd;
         UART4_FBRD_R |= uartfbrd;
-        UART4_LCRH_R |= lchr;
+        UART4_LCRH_R |= lcrh;
         UART4_CC_R &= ~(0xF);
         UART4_CTL_R |= 1;
     }
     else if (ui32Base == 3)
     {
-        UART3_CTL_R &= ~(1<<0);
+        UART3_CTL_R &= ~(1 << 0);
         UART3_IBRD_R |= uartibrd;
         UART3_FBRD_R |= uartfbrd;
-        UART3_LCRH_R |= lchr;
+        UART3_LCRH_R |= lcrh;
         UART3_CC_R &= ~(0xF);
         UART3_CTL_R |= 1;
     }
     else if (ui32Base == 2)
     {
-        UART2_CTL_R &= ~(1<<0);
+        UART2_CTL_R &= ~(1 << 0);
         UART2_IBRD_R |= uartibrd;
         UART2_FBRD_R |= uartfbrd;
-        UART2_LCRH_R |= lchr;
+        UART2_LCRH_R |= lcrh;
         UART2_CC_R &= ~(0xF);
         UART2_CTL_R |= 1;
     }
     else if (ui32Base == 1)
     {
-        UART1_CTL_R &= ~(1<<0);
+        UART1_CTL_R &= ~(1 << 0);
         UART1_IBRD_R |= uartibrd;
         UART1_FBRD_R |= uartfbrd;
-        UART1_LCRH_R |= lchr;
+        UART1_LCRH_R |= lcrh;
         UART1_CC_R &= ~(0xF);
         UART1_CTL_R |= 1;
     }
     else if (ui32Base == 0)
     {
-        UART0_CTL_R &= ~(1<<0);
+        UART0_CTL_R &= ~(1 << 0);
         UART0_IBRD_R |= uartibrd;
         UART0_FBRD_R |= uartfbrd;
-        UART0_LCRH_R |= lchr;
+        UART0_LCRH_R |= lcrh;
         UART0_CC_R &= ~(0xF);
         UART0_CTL_R |= 1;
+    }
+
+    // Digital enable
+    if (ui32Base == 0 || ui32Base == 2 || ui32Base == 3 || ui32Base == 4)
+    {
+        uint32_t den;
+        if (ui32Base == 0)
+        {
+            den = (1 << 0) | (1 << 1);
+        }
+        else if (ui32Base == 2)
+        {
+            den = (1 << 6) | (1 << 7);
+        }
+        else if (ui32Base == 3)
+        {
+            den = (1 << 4) | (1 << 5);
+        }
+        else if (ui32Base == 4)
+        {
+            den = (1 << 2) | (1 << 3);
+        }
+        GPIO_PORTA_AHB_DEN_R |= den;
+    }
+    else if (ui32Base == 1)
+    {
+        GPIO_PORTB_AHB_DEN_R |= (1 << 0) | (1 << 1);
+    }
+    else if (ui32Base == 5 || ui32Base == 7)
+    {
+        uint32_t den;
+        if (ui32Base == 5)
+        {
+            den = (1 << 6) | (1 << 7);
+        }
+        else if (ui32Base == 7)
+        {
+            den = (1 << 4) | (1 << 5);
+        }
+        GPIO_PORTC_AHB_DEN_R |= den;
+    }
+    else if (ui32Base == 6)
+    {
+        GPIO_PORTP_DEN_R |= (1 << 1) | (1 << 0);
     }
 }
 
 char UART_getChar()
 {
-
+    return 0;
 }
 
 void UART_putChar(char c)

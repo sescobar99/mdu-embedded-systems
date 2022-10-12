@@ -1,6 +1,7 @@
 #include "inc/tm4c129encpdt.h"
 #include <stdint.h>
 
+
 /**
  * This  Function  initializes  the  UART  driver,  here  we  set  up  the  hardware module.
  */

@@ -11,5 +11,8 @@
 
 int main(void)
 {
-
+    UART_init(0);
+    while (1) {
+        UARTprintf("Hola mundo\n");
+    }
 }
