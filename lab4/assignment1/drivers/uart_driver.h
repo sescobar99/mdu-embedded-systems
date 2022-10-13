@@ -30,6 +30,9 @@ void UART_reset();
 void UART_putString(char* string);
 
 
+char* UART_getString();
+
+
 
 
 

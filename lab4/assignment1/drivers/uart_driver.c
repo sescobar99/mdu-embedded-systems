@@ -12,11 +12,9 @@
 //7. The driver should send one stop bit.
 //8. The driver should operate in normal channel mode.
 
-
 void UART_init(uint32_t ui32Base)
 {
     UART_module = ui32Base;
-
     /*
      * INITIALIZATION
      */
@@ -106,7 +104,7 @@ void UART_init(uint32_t ui32Base)
             pctl = (1 << 16) | (1 << 20);
             den = (1 << 4) | (1 << 5);
         }
-        GPIO_PORTA_AHB_AFSEL_R = afsel;
+        GPIO_PORTC_AHB_AFSEL_R = afsel;
         GPIO_PORTC_AHB_PCTL_R = pctl;
         GPIO_PORTC_AHB_DEN_R = den;
     }
@@ -214,9 +212,54 @@ char UART_getChar()
     if (UART_enable)
     {
         char c;
-        while ((UART0_FR_R & (1 << 4)) != 0)
-            ;
-        c = UART0_DR_R;
+        if (UART_module == 0)
+        {
+            while ((UART0_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART0_DR_R;
+        }
+        else if (UART_module == 1)
+        {
+            while ((UART1_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART1_DR_R;
+        }
+        else if (UART_module == 2)
+        {
+            while ((UART2_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART2_DR_R;
+        }
+        else if (UART_module == 3)
+        {
+            while ((UART3_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART3_DR_R;
+        }
+        else if (UART_module == 4)
+        {
+            while ((UART4_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART4_DR_R;
+        }
+        else if (UART_module == 5)
+        {
+            while ((UART5_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART5_DR_R;
+        }
+        else if (UART_module == 6)
+        {
+            while ((UART6_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART6_DR_R;
+        }
+        else if (UART_module == 7)
+        {
+            while ((UART7_FR_R & (1 << 4)) != 0)
+                ;
+            c = UART7_DR_R;
+        }
         return c;
     }
 }
@@ -225,22 +268,88 @@ void UART_putChar(char c)
 {
     if (UART_enable)
     {
-        while ((UART0_FR_R & (1 << 5)) != 0)
-            ;
-        UART0_DR_R = c;
+        if (UART_module == 0)
+        {
+            while ((UART0_FR_R & (1 << 5)) != 0)
+                ;
+            UART0_DR_R = c;
+        }
+        else if (UART_module == 1)
+        {
+            while ((UART1_FR_R & (1 << 5)) != 0)
+                ;
+            UART1_DR_R = c;
+        }
+        else if (UART_module == 2)
+        {
+            while ((UART2_FR_R & (1 << 5)) != 0)
+                ;
+            UART2_DR_R = c;
+        }
+        else if (UART_module == 3)
+        {
+            while ((UART3_FR_R & (1 << 5)) != 0)
+                ;
+            UART3_DR_R = c;
+        }
+        else if (UART_module == 4)
+        {
+            while ((UART4_FR_R & (1 << 5)) != 0)
+                ;
+            UART4_DR_R = c;
+        }
+        else if (UART_module == 5)
+        {
+            while ((UART5_FR_R & (1 << 5)) != 0)
+                ;
+            UART5_DR_R = c;
+        }
+        else if (UART_module == 6)
+        {
+            while ((UART6_FR_R & (1 << 5)) != 0)
+                ;
+            UART6_DR_R = c;
+        }
+        else if (UART_module == 7)
+        {
+            while ((UART7_FR_R & (1 << 5)) != 0)
+                ;
+            UART7_DR_R = c;
+        }
+
     }
 
 }
 
 void UART_reset()
 {
-
+    SYSCTL_RCGCUART_R = 0x0;
+    SYSCTL_RCGCGPIO_R = 0x0;
 }
-
 
 void UART_putString(char* string)
 {
-    while (*string){
-     UART_putChar(*(string++));
+    while (*string)
+    {
+        UART_putChar(*(string++));
     }
+}
+
+char* UART_getString()
+{
+    char string[50];
+    char* final_string = string;
+    char c;
+    int i;
+    for (i = 0; i < 50; i++)
+    {
+        c = UART_getChar();
+        if (c == 13 || c == 10)
+        {
+            string[i] = 0;
+            break;
+        }
+        string[i] = c;
+    }
+    return final_string;
 }
