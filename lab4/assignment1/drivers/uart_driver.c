@@ -12,6 +12,7 @@
 //7. The driver should send one stop bit.
 //8. The driver should operate in normal channel mode.
 
+
 void UART_init(uint32_t ui32Base)
 {
     /*
@@ -201,14 +202,18 @@ void UART_init(uint32_t ui32Base)
         UART0_CC_R = 0x0;
         UART0_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
+
 }
 
 char UART_getChar()
 {
-    char c;
-    while ((UART0_FR_R & (1 << 4)) != 0);
-    c = UART0_DR_R;
-    return c;
+        char c;
+        while ((UART0_FR_R & (1 << 4)) != 0)
+            ;
+        c = UART0_DR_R;
+
+        return c;
+
 }
 
 void UART_putChar(char c)
@@ -221,4 +226,12 @@ void UART_putChar(char c)
 void UART_reset()
 {
 
+}
+
+
+void UART_putString(char* string)
+{
+    while (*string){
+     UART_putChar(*(string++));
+    }
 }

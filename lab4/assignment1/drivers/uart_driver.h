@@ -25,6 +25,9 @@ void UART_putChar(char c);
 void UART_reset();
 
 
+void UART_putString(char* string);
+
+
 
 
 
