@@ -1,17 +1,5 @@
 #include <drivers/uart_driver.h>
 
-// debug
-
-//1. The driver shall have the following interface:
-//2. The UART driver shall operate at 9600 baud. It is not necessary to make the baud rate
-//configurable.
-//3. The functions UART getChar() and UART putChar(char c) should not try to access the  hardware if the driver was not initialized first.
-//4. A driver should be portable and only the interface functions should be accessible from other parts of the code.
-//5. Packet length should be 8 bits.
-//6. The driver should send no parity bit.
-//7. The driver should send one stop bit.
-//8. The driver should operate in normal channel mode.
-
 void UART_init(uint32_t ui32Base)
 {
     UART_module = ui32Base;
