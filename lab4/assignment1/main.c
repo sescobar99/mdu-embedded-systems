@@ -28,6 +28,7 @@
 int main(void)
 {
     UART_init(0);
+    UART_putString("Hello world\n\r");
     while (1) {
         UART_putChar('h');
     }
