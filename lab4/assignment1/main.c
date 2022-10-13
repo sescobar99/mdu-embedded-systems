@@ -8,17 +8,27 @@
  */
 
 #include "drivers/uart_driver.h"
+#include <stdint.h>
 #include <stdbool.h>
+#include "inc/hw_memmap.h"
+#include "inc/hw_ints.h"
+#include "inc/tm4c129encpdt.h"
+#include "driverlib/gpio.h"
+#include "driverlib/rom_map.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/pwm.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
-#include <stdio.h>
+#include "drivers/buttons.h"
 #include "drivers/pinout.h"
-#include "inc/hw_memmap.h"
 
 int main(void)
 {
     UART_init(0);
     while (1) {
-        UART_putChar(UART_getChar());
+        UART_putChar('h');
     }
 }
