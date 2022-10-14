@@ -323,16 +323,16 @@ void UART_reset()
 //    UARTLCRH reset 0x0000.0000      # UART Line Control
 //    UARTCC reset 0x0000.0000        # UART Clock Configuration
 
-    SYSCTL_RCGCUART_R = 0x0;
-    SYSCTL_RCGCGPIO_R = 0x0;
-    //GPIO_PORTA_AHB_AFSEL_R = 0x0;
-    //GPIO_PORTA_AHB_PCTL_R = 0x0;
-    //GPIO_PORTA_AHB_DEN_R = 0X0;
-    //UART0_CTL_R = 0X300;
-    //UART0_IBRD_R = 0x0;
-    //UART0_FBRD_R = 0X0;
-    //UART0_LCRH_R = 0X0;
-    //UART0_CC_R = 0X0;
+    SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0;
+    SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0;
+    GPIO_PORTA_AHB_AFSEL_R = 0x0;
+    GPIO_PORTA_AHB_PCTL_R = 0x0;
+    GPIO_PORTA_AHB_DEN_R = 0X0;
+    UART0_CTL_R = 0X300;
+    UART0_IBRD_R = 0x0;
+    UART0_FBRD_R = 0X0;
+    UART0_LCRH_R = 0X0;
+    UART0_CC_R = 0X0;
 }
 
 void UART_putString(char* string)
