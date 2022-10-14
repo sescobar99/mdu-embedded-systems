@@ -26,10 +26,14 @@ void UART_putChar(char c);
  */
 void UART_reset();
 
-
+/**
+ * This function uses the putChar function to write a string.
+ */
 void UART_putString(char* string);
 
-
+/**
+ * This function uses the getChar function to read a string.
+ */
 char* UART_getString();
 
 

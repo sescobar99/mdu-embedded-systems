@@ -192,19 +192,20 @@ void UART_init(uint32_t ui32Base)
         UART0_CTL_R = (1 << 0) | (1 << 8) | (1 << 9);
     }
 
-    UART_enable = 1;
+    UART_enable = 1; // Mark the UART as it has been init. and config.
 }
 
 char UART_getChar()
 {
+    // If the UART has been initialized
     if (UART_enable)
     {
         char c;
         if (UART_module == 0)
         {
-            while ((UART0_FR_R & (1 << 4)) != 0)
+            while ((UART0_FR_R & (1 << 4)) != 0)    // Wait until is ready to get the data
                 ;
-            c = UART0_DR_R;
+            c = UART0_DR_R; // Gets the data
         }
         else if (UART_module == 1)
         {
@@ -254,13 +255,14 @@ char UART_getChar()
 
 void UART_putChar(char c)
 {
+    // If the UART has been initialized
     if (UART_enable)
     {
         if (UART_module == 0)
         {
-            while ((UART0_FR_R & (1 << 5)) != 0)
+            while ((UART0_FR_R & (1 << 5)) != 0)    // If the UART is ready to get the data
                 ;
-            UART0_DR_R = c;
+            UART0_DR_R = c; // The data is put in the register
         }
         else if (UART_module == 1)
         {
@@ -311,15 +313,16 @@ void UART_putChar(char c)
 
 void UART_reset()
 {
+    // Resets the needed registers
     SYSCTL_RCGCUART_R = 0x0;
     SYSCTL_RCGCGPIO_R = 0x0;
 }
 
 void UART_putString(char* string)
 {
-    while (*string)
+    while (*string) // While the pointer doesn't point to the null character
     {
-        UART_putChar(*(string++));
+        UART_putChar(*(string++));  // Prints the character and move the pointer to the next one
     }
 }
 
@@ -329,15 +332,19 @@ char* UART_getString()
     char* final_string = string;
     char c;
     int i;
-    for (i = 0; i < 50; i++)
+    // Iterating until receiving the enter character or the string gets to its maximum
+    for (i = 0; i < 49; i++)
     {
-        c = UART_getChar();
+        c = UART_getChar(); // Gets the character from the terminal
+        // It breaks if the character is one of the following ones
         if (c == 13 || c == 10)
         {
             string[i] = 0;
             break;
         }
-        string[i] = c;
+        UART_putChar(c);
+        string[i] = c;  // Concatenate the char. to the array
+        if (i == 48) string[i+1] = 0;
     }
     return final_string;
 }
