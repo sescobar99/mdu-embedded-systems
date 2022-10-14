@@ -313,10 +313,6 @@ void UART_putChar(char c)
 
 void UART_reset()
 {
-    // Resets the needed registers
-    SYSCTL_RCGCUART_R = 0x0;
-    SYSCTL_RCGCGPIO_R = 0x0;
-
 //    RCGCUART reset 0x0000.0000        # Universal Asynchronous Receiver/Transmitter Run Mode Clock Gating Control
 //    RCGCGPIO reset 0x0000.0000        # General-Purpose Input/Output Run Mode Clock Gating Control
 //    GPIOAFSEL reset 0x0000.0000 (for GPIO ports that are not listed in attached table     # GPIO Alternate Function Select
@@ -326,6 +322,17 @@ void UART_reset()
 //    UARTFBRD all bits cleared on reset# UART Fractional Baud-Rate Divisor
 //    UARTLCRH reset 0x0000.0000      # UART Line Control
 //    UARTCC reset 0x0000.0000        # UART Clock Configuration
+
+    SYSCTL_RCGCUART_R = 0x0;
+    SYSCTL_RCGCGPIO_R = 0x0;
+    //GPIO_PORTA_AHB_AFSEL_R = 0x0;
+    //GPIO_PORTA_AHB_PCTL_R = 0x0;
+    //GPIO_PORTA_AHB_DEN_R = 0X0;
+    //UART0_CTL_R = 0X300;
+    //UART0_IBRD_R = 0x0;
+    //UART0_FBRD_R = 0X0;
+    //UART0_LCRH_R = 0X0;
+    //UART0_CC_R = 0X0;
 }
 
 void UART_putString(char* string)
