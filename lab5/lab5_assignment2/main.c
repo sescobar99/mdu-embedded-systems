@@ -51,14 +51,14 @@ void printString(char* str)
 // High priority task
 void vTaskA(void* pvParameters)
 {
-    int i;
     vTaskDelay(400 / portTICK_PERIOD_MS);
     printString("Task A: Started\n");
+    int i;
     for (i = 0; i < SECOND * 2; i++)
     {
     }
     // Enters cs
-    xSemaphoreTake(bin_sem, (TickType_t) 0);
+    xSemaphoreTake(bin_sem, portMAX_DELAY);
     printString("Task A: sem take\n");
     for (i = 0; i < SECOND * 5; i++)
     {
@@ -87,7 +87,7 @@ void vTaskC(void* pvParameters)
     {
     }
     // Enters cs
-    xSemaphoreTake(bin_sem, (TickType_t) 0);
+    xSemaphoreTake(bin_sem, 0);
     printString("Task C: sem take\n");
     for (i = 0; i < SECOND * 7; i++)
     {
