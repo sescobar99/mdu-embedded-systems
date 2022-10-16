@@ -44,6 +44,17 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
+void idleWork(int seconds,char taskName, bool debug){
+
+    int i;
+    for (i = 0; i < SECOND * seconds; i++)
+    {
+        printString("Busy " + taskName);
+    }
+    printString("\n");
+
+}
+
 //*******************************************************
 // Tasks code
 //*******************************************************
