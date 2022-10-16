@@ -64,16 +64,11 @@ void vTaskA(void* pvParameters)
 {
     vTaskDelay(400 / portTICK_PERIOD_MS);
     printString("Task A: Started\n");
-    int i;
-    for (i = 0; i < SECOND * 2; i++)
-    {
-    }
+    idleWork(5, 'A', true);
     // Enters cs
     xSemaphoreTake(bin_sem, portMAX_DELAY);
     printString("Task A: sem take\n");
-    for (i = 0; i < SECOND * 5; i++)
-    {
-    }
+    idleWork(5, 'A', true);
     printString("Task A: sem give\n");
     xSemaphoreGive(bin_sem);
     // Leaves cs
