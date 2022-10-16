@@ -45,18 +45,12 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
-void idleWork(int seconds, char taskName, bool debug)
+void idleWork(int seconds)
 {
-
     int i;
     for (i = 0; i < SECOND * seconds; i++)
     {
-        if (i % 150000 == 0)
-        {
-            printString(strcat("Busy ", taskName));
-        }
     }
-    printString("\n");
 
 }
 
@@ -69,11 +63,12 @@ void vTaskA(void* pvParameters)
 {
     vTaskDelay(400 / portTICK_PERIOD_MS);
     printString("Task A: Started\n");
-    idleWork(5, 'A', true);
+    idleWork(5);
     // Enters cs
+    printString("Task A: sem ask\n");
     xSemaphoreTake(bin_sem, portMAX_DELAY);
     printString("Task A: sem take\n");
-    idleWork(5, 'A', true);
+    idleWork(5);
     printString("Task A: sem give\n");
     xSemaphoreGive(bin_sem);
     // Leaves cs
@@ -83,32 +78,26 @@ void vTaskA(void* pvParameters)
 // Medium priority task
 void vTaskB(void* pvParameters)
 {
-    int i;
+    vTaskDelay(800 / portTICK_PERIOD_MS);
     printString("Task B: Started\n");
-
+    idleWork(5);
     printString("Task B: Finished\n");
     vTaskDelete(NULL);
 }
 // Low priority task
 void vTaskC(void* pvParameters)
 {
-    int i;
     printString("Task C: Started\n");
-    for (i = 0; i < SECOND * 2; i++)
-    {
-    }
+    idleWork(2);
     // Enters cs
+    printString("Task C: sem ask\n");
     xSemaphoreTake(bin_sem, 0);
     printString("Task C: sem take\n");
-    for (i = 0; i < SECOND * 7; i++)
-    {
-    }
+    idleWork(7);
     printString("Task C: sem give\n");
     xSemaphoreGive(bin_sem);
     // Leaves cs
-    for (i = 0; i < SECOND * 2; i++)
-    {
-    }
+    idleWork(2);
     printString("Task C: Finished\n");
     vTaskDelete(NULL);
 }
@@ -128,8 +117,8 @@ void vScheduling()
     xTaskHandle xHandle1, xHandle2, xHandle3;
     xTaskCreate(vTaskA, "TASKA", configMINIMAL_STACK_SIZE, &ucParameterToPass1,
                 tskIDLE_PRIORITY + 3, &xHandle1);
-//    xTaskCreate(vTaskB, "TASKB", configMINIMAL_STACK_SIZE, &ucParameterToPass2,
-//                tskIDLE_PRIORITY + 2, &xHandle2);
+    xTaskCreate(vTaskB, "TASKB", configMINIMAL_STACK_SIZE, &ucParameterToPass2,
+                tskIDLE_PRIORITY + 2, &xHandle2);
     xTaskCreate(vTaskC, "TASKC", configMINIMAL_STACK_SIZE, &ucParameterToPass3,
                 tskIDLE_PRIORITY + 1, &xHandle3);
 
