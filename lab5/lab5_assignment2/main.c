@@ -58,7 +58,7 @@ void vTaskA(void* pvParameters)
     {
     }
     // Enters cs
-    xSemaphoreTake(bin_sem, 0);
+    xSemaphoreTake(bin_sem, (TickType_t) 0);
     printString("Task A: sem take\n");
     for (i = 0; i < SECOND * 5; i++)
     {
@@ -87,7 +87,7 @@ void vTaskC(void* pvParameters)
     {
     }
     // Enters cs
-    xSemaphoreTake(bin_sem, 0);
+    xSemaphoreTake(bin_sem, (TickType_t) 0);
     printString("Task C: sem take\n");
     for (i = 0; i < SECOND * 7; i++)
     {
