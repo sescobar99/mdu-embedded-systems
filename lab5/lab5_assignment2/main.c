@@ -19,6 +19,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "inc/tm4c129encpdt.h"
+#include <string.h>
 
 static volatile SemaphoreHandle_t bin_sem;
 
@@ -44,12 +45,16 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
-void idleWork(int seconds,char taskName, bool debug){
+void idleWork(int seconds, char taskName, bool debug)
+{
 
     int i;
     for (i = 0; i < SECOND * seconds; i++)
     {
-        printString("Busy " + taskName);
+        if (i % 150000 == 0)
+        {
+            printString(strcat("Busy ", taskName));
+        }
     }
     printString("\n");
 
