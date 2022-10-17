@@ -23,9 +23,9 @@
 
 static volatile SemaphoreHandle_t bin_sem;
 
-static const task_A_period = pdMS_TO_TICKS(10000);
-static const task_B_period = pdMS_TO_TICKS(500000);
-static const task_C_period = pdMS_TO_TICKS(3000000);
+static const unsigned int task_A_period = pdMS_TO_TICKS(10000);
+static const unsigned int task_B_period = pdMS_TO_TICKS(20000);
+static const unsigned int task_C_period = pdMS_TO_TICKS(20000);
 
 void configureUART(void)
 {
@@ -51,15 +51,25 @@ void printString(char* str)
 
 void idleWork(int seconds)
 {
-    int i;
-    for (i = 0; i < SECOND * seconds; i++)
+    TickType_t currentTick = xTaskGetTickCount();
+    while (xTaskGetTickCount() - currentTick < pdMS_TO_TICKS(seconds * 1000))
     {
     }
 }
 
-void deadlineMiss(TickType_t xDeadlineMissedTime, char cTask)
+void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char cTask)
 {
-    printString("DEADLINE MISSED");
+    TickType_t xPeriodLimit = xLastWakeTime + period;
+    TickType_t xActualTime = xTaskGetTickCount();
+    if (xPeriodLimit < xActualTime)
+    {
+        printString("DEADLINE MISSED\n");
+    }
+    else
+    {
+        vTaskDelayUntil(&xLastWakeTime, period);
+    }
+
 }
 
 //*******************************************************
@@ -70,61 +80,49 @@ void deadlineMiss(TickType_t xDeadlineMissedTime, char cTask)
 void vTaskA(void* pvParameters)
 {
     TickType_t xLastWakeTime, xPeriodLimit, xActualTime;
-    vTaskDelay(pdMS_TO_TICKS(4000));
+    vTaskDelay(pdMS_TO_TICKS(3000));
     while (1)
     {
         xLastWakeTime = xTaskGetTickCount();
 
         printString("Task A: Started\n");
-        idleWork(2);
+        idleWork(1);
         // Enters cs
         xSemaphoreTake(bin_sem, portMAX_DELAY);
         printString("Task A: sem take\n");
-        idleWork(5);
+        int i;
+        for (i = 0; i < 2; i++)
+        {
+            idleWork(1);
+        }
         printString("Task A: sem give\n");
         xSemaphoreGive(bin_sem);
         // Leaves cs
         idleWork(1);
         printString("Task A: Finished\n");
 
-        xPeriodLimit = xLastWakeTime + task_A_period;
-        xActualTime = xTaskGetTickCount();
-        if (xPeriodLimit < xActualTime)
-        {
-            deadlineMiss(xActualTime - xPeriodLimit, 'A');
-        }
-        else
-        {
-            vTaskDelayUntil(&xLastWakeTime, task_A_period);
-        }
+        deadlineMiss(xLastWakeTime, task_A_period, 'A');
     }
-    vTaskDelete(NULL);
 }
 // Medium priority task
 void vTaskB(void* pvParameters)
 {
     TickType_t xLastWakeTime, xPeriodLimit, xActualTime;
-    vTaskDelay(pdMS_TO_TICKS(8000));
+    vTaskDelay(pdMS_TO_TICKS(6000));
     while (1)
     {
         xLastWakeTime = xTaskGetTickCount();
 
         printString("Task B: Started\n");
-        idleWork(6);
+        int i;
+        for (i = 0; i < 4; i++)
+        {
+            idleWork(1);
+        }
         printString("Task B: Finished\n");
 
-        xPeriodLimit = xLastWakeTime + task_B_period;
-        xActualTime = xTaskGetTickCount();
-        if (xPeriodLimit < xActualTime)
-        {
-            deadlineMiss(xActualTime - xPeriodLimit, 'B');
-        }
-        else
-        {
-            vTaskDelayUntil(&xLastWakeTime, task_B_period);
-        }
+        deadlineMiss(xLastWakeTime, task_B_period, 'B');
     }
-    vTaskDelete(NULL);
 }
 // Low priority task
 void vTaskC(void* pvParameters)
@@ -135,29 +133,23 @@ void vTaskC(void* pvParameters)
         xLastWakeTime = xTaskGetTickCount();
 
         printString("Task C: Started\n");
-        idleWork(2);
+        idleWork(1);
         // Enters cs
         xSemaphoreTake(bin_sem, 0);
         printString("Task C: sem take\n");
-        idleWork(7);
+        int i;
+        for (i = 0; i < 6; i++)
+        {
+            idleWork(1);
+        }
         printString("Task C: sem give\n");
         xSemaphoreGive(bin_sem);
         // Leaves cs
-        idleWork(2);
+        idleWork(1);
         printString("Task C: Finished\n");
 
-        xPeriodLimit = xLastWakeTime + task_C_period;
-        xActualTime = xTaskGetTickCount();
-        if (xPeriodLimit < xActualTime)
-        {
-            deadlineMiss(xActualTime - xPeriodLimit, 'C');
-        }
-        else
-        {
-            vTaskDelayUntil(&xLastWakeTime, task_C_period);
-        }
+        deadlineMiss(xLastWakeTime, task_C_period, 'C');
     }
-    vTaskDelete(NULL);
 }
 
 //*******************************************************
@@ -190,8 +182,6 @@ void vScheduling()
 int main(void)
 {
     configureUART();
-    if (task_A_period == 10000 / portTICK_PERIOD_MS)
-        UARTCharPut(UART0_BASE, '1');
     vScheduling();
 
     while (1)
