@@ -83,7 +83,7 @@
  *----------------------------------------------------------*/
 
 // System clock rate, 120 MHz
-#define SYSTEM_CLOCK    120000000U
+#define SYSTEM_CLOCK    16000000U
 
 #define configCPU_CLOCK_HZ              SYSTEM_CLOCK
 #define configUSE_TICKLESS_IDLE         0
