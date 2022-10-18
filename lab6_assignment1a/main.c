@@ -74,9 +74,7 @@ unsigned int produce()
 {
     static unsigned int counter = 0;
     printString("PRODUCER: Starts production\n");
-    printString("Before\n");
     vTaskDelay(pdMS_TO_TICKS(1000));
-    printString("After\n");
     char str[50];
     sprintf(str, "PRODUCER: Produces value %u\n", counter+1);
     printString(str);
@@ -130,13 +128,14 @@ void vTaskConsumer(void* pvParameters)
         value_to_consume = buffer[bottom];
         bottom = (bottom + 1) % BUFFER_SIZE;
         char str[50];
-        sprintf(str, "CONSUMER %u: Takes value %u from buffer\n", *(unsigned int*) pvParameters, value_to_consume);
+        unsigned int* task = (unsigned int*) pvParameters;
+        sprintf(str, "CONSUMER 0: Takes value %u from buffer\n", value_to_consume);
         printString(str);
 //        xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem);
 
-        consume(value_to_consume, *(unsigned int*) pvParameters);
+        consume(value_to_consume, 0);
     }
 }
 
