@@ -81,13 +81,15 @@ unsigned int produce()
     return ++counter;
 }
 
-void consume(unsigned int value_to_consume)
+void consume(unsigned int value_to_consume, unsigned int task)
 {
     char str[50];
-    sprintf(str, "CONSUMER: Starts consuming value %u\n", value_to_consume);
+    sprintf(str, "CONSUMER %u: Starts consuming value %u\n", task,
+            value_to_consume);
     printString(str);
     vTaskDelay(pdMS_TO_TICKS(5000));
-    sprintf(str, "CONSUMER: Finishes consuming value %u\n", value_to_consume);
+    sprintf(str, "CONSUMER %u: Finishes consuming value %u\n", task,
+            value_to_consume);
     printString(str);
 }
 
@@ -105,6 +107,9 @@ void vTaskProducer(void* pvParameters)
         xSemaphoreTake(producer_sem, portMAX_DELAY);
 
         buffer[top] = produced_val;
+        char str[50];
+        sprintf(str, "PRODUCER: Put value %u in buffer\n", produced_val);
+        printString(str);
         top = (top + 1) % BUFFER_SIZE;
 
         xSemaphoreGive(consumer_sem);
@@ -121,11 +126,14 @@ void vTaskConsumer(void* pvParameters)
         xSemaphoreTake(buffer_sem, portMAX_DELAY);
         value_to_consume = buffer[bottom];
         bottom = (bottom + 1) % BUFFER_SIZE;
+        char str[50];
+        sprintf(str, "CONSUMER %u: Takes value %u from buffer\n", *(unsigned int*) pvParameters, value_to_consume);
+        printString(str);
         xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem);
 
-        consume(value_to_consume);
+        consume(value_to_consume, *(unsigned int*) pvParameters);
     }
 }
 
@@ -145,8 +153,10 @@ void vScheduling()
     {
         consumers[i] = i;
         xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
-                    (void*) consumers[i], tskIDLE_PRIORITY + 1, NULL);
+                    (void* ) consumers[i], tskIDLE_PRIORITY + 1, NULL);
     }
+
+    xSemaphoreGive(buffer_sem);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -161,8 +171,8 @@ int main(void)
     bottom = top;
 
     // Create semaphores
-    producer_sem = xSemaphoreCreateCounting(1, 0);
-    consumer_sem = xSemaphoreCreateCounting(5, 5);
+    producer_sem = xSemaphoreCreateCounting(1, 1);
+    consumer_sem = xSemaphoreCreateCounting(5, 0);
     buffer_sem = xSemaphoreCreateBinary();
 
     configureUART(); // Init UART
