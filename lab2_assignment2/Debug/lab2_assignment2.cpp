@@ -9,7 +9,6 @@
 
 
 
-
 #include "Energia.h"
 #include <SPI.h>
 #include <stdbool.h>
@@ -33,21 +32,16 @@ void loop();
 void ConfigureUART(void);
 void ConfigurePWM(float *pwm_word);
 
-#line 28
-uint16_t x, y, x00, y00;
+#line 27
+uint16_t x, y;
 float joystickCompoundValue;
 float inputNumber;
 float pwm_word;
 uint32_t systemClock;
 
 
-
-
-
 void setup()
 {
-
-
     inputNumber = 0.0f;
     ConfigureUART();
     ConfigurePWM(&pwm_word);
@@ -56,22 +50,15 @@ void setup()
 
 void loop()
 {
+    
     x = map(analogRead(joystickX), 0, 4096, 0, 128);
     y = map(analogRead(joystickY), 0, 4096, 128, 0);
 
-    x = x < 1 ? 1 : x;
-    x = x > 126 ? 126 : x;
-    y = y < 1 ? 1 : y;
-    y = y > 126 ? 126 : y;
+    
+    joystickCompoundValue = ((x - 64) * (x - 64) + (y - 64) * (y - 64)) >> 5;
+    inputNumber = joystickCompoundValue;
 
-
-
-        joystickCompoundValue = ((x - 64) * (x - 64) + (y - 64) * (y - 64))
-                >> 5;
-        inputNumber = joystickCompoundValue;
-
-
-
+    
     if (inputNumber <= 0 || inputNumber >= 100)
     {
         inputNumber = (inputNumber <= 0 ? 0.0f : 100.0f);
@@ -83,13 +70,14 @@ void loop()
                      (inputNumber <= 0 ? 0 : GPIO_PIN_3));
 
     }
-    else
+    else 
     {
         
         GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_3);
         GPIOPinConfigure (GPIO_PF3_M0PWM3);
         PWMOutputState(PWM0_BASE, PWM_OUT_3_BIT, true);
 
+        
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_3,
                          (pwm_word / 100) * (inputNumber / 3)); 
     }
@@ -97,6 +85,7 @@ void loop()
     UARTprintf("=> %d \n", (int) inputNumber);
 
 }
+
 
 void ConfigureUART(void)
 {
@@ -111,6 +100,7 @@ void ConfigureUART(void)
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC); 
     UARTStdioConfig(0, 115200, 16000000); 
 }
+
 
 void ConfigurePWM(float *pwm_word)
 {

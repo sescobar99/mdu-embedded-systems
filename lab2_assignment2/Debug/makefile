@@ -147,8 +147,8 @@ all: $(OBJS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "lab2_assignment2.out" secondary-outputs
 
 dependents:
-	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug && $(MAKE) all
-	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug && $(MAKE) all
+	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug && $(MAKE) clean all
+	-cd C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug && $(MAKE) clean all
 
 # Tool invocations
 lab2_assignment2.out: $(OBJS) $(GEN_CMDS) C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug/libtivac_EK-TM4C1294XL_core.a C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_SPI/Debug/libtivac_EK-TM4C1294XL_SPI.a

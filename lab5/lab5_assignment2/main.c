@@ -156,7 +156,7 @@ void vTaskC(void* pvParameters)
         printString("Task C: Started\n");
         idleWork(1, "C");
         // Enters cs
-        xSemaphoreTake(bin_sem, 0);
+        xSemaphoreTake(bin_sem, portMAX_DELAY);
         printString("Task C: sem take\n");
         int i;
         for (i = 0; i < 6; i++)
@@ -181,6 +181,7 @@ void vScheduling()
 {
     // Create semaphore
     bin_sem = xSemaphoreCreateBinary();
+    xSemaphoreGive(bin_sem);
 
     // Create tasks
     static unsigned char ucParameterToPass1, ucParameterToPass2,

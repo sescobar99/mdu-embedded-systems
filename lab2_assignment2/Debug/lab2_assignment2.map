@@ -49,8 +49,6 @@ Discarded input sections
  .bss           0x00000000        0x0 ./lab2_assignment2.o
  .bss.systemClock
                 0x00000000        0x4 ./lab2_assignment2.o
- .bss.x00       0x00000000        0x2 ./lab2_assignment2.o
- .bss.y00       0x00000000        0x2 ./lab2_assignment2.o
  .text          0x00000000        0x0 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
  .data          0x00000000        0x0 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
  .bss           0x00000000        0x0 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
@@ -635,7 +633,7 @@ LOAD ./drivers/uartstdio.o
 LOAD ./lab2_assignment2.o
 START GROUP
 
-.text           0x00000000     0x1868
+.text           0x00000000     0x184c
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _text = .
  *(.isr_vector)
@@ -655,294 +653,294 @@ START GROUP
                 0x00000430       0x1a ./drivers/uartstdio.o
                 0x00000430                UARTprintf
  *fill*         0x0000044a        0x2 
- .text.loop     0x0000044c      0x154 ./lab2_assignment2.o
+ .text.loop     0x0000044c      0x138 ./lab2_assignment2.o
                 0x0000044c                loop
  .text._Z13ConfigureUARTv
-                0x000005a0       0x5c ./lab2_assignment2.o
-                0x000005a0                ConfigureUART()
+                0x00000584       0x5c ./lab2_assignment2.o
+                0x00000584                ConfigureUART()
  .text._Z12ConfigurePWMPf
-                0x000005fc       0x9c ./lab2_assignment2.o
-                0x000005fc                ConfigurePWM(float*)
- .text.setup    0x00000698       0x20 ./lab2_assignment2.o
-                0x00000698                setup
- .text.NmiSR    0x000006b8        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x000005e0       0x9c ./lab2_assignment2.o
+                0x000005e0                ConfigurePWM(float*)
+ .text.setup    0x0000067c       0x20 ./lab2_assignment2.o
+                0x0000067c                setup
+ .text.NmiSR    0x0000069c        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
  .text.FaultISR
-                0x000006ba        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x0000069e        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
  .text.IntDefaultHandler
-                0x000006bc        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
- *fill*         0x000006be        0x2 
+                0x000006a0        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+ *fill*         0x000006a2        0x2 
  .text.ResetISR
-                0x000006c0       0x98 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x000006c0                ResetISR
+                0x000006a4       0x98 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x000006a4                ResetISR
  .text.ToneIntHandler
-                0x00000758        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000758                ToneIntHandler
+                0x0000073c        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x0000073c                ToneIntHandler
  .text.UARTIntHandler
-                0x0000075a        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x0000075a                UARTIntHandler
+                0x0000073e        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x0000073e                UARTIntHandler
  .text.UARTIntHandler1
-                0x0000075c        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x0000075c                UARTIntHandler1
+                0x00000740        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x00000740                UARTIntHandler1
  .text.UARTIntHandler2
-                0x0000075e        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x0000075e                UARTIntHandler2
+                0x00000742        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x00000742                UARTIntHandler2
  .text.UARTIntHandler3
-                0x00000760        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000760                UARTIntHandler3
+                0x00000744        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x00000744                UARTIntHandler3
  .text.UARTIntHandler4
-                0x00000762        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000762                UARTIntHandler4
+                0x00000746        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x00000746                UARTIntHandler4
  .text.UARTIntHandler5
-                0x00000764        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000764                UARTIntHandler5
+                0x00000748        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x00000748                UARTIntHandler5
  .text.UARTIntHandler6
-                0x00000766        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000766                UARTIntHandler6
+                0x0000074a        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x0000074a                UARTIntHandler6
  .text.UARTIntHandler7
-                0x00000768        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
-                0x00000768                UARTIntHandler7
+                0x0000074c        0x2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+                0x0000074c                UARTIntHandler7
  .text.GPIOXIntHandler
-                0x0000076a       0x30 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000076a                GPIOXIntHandler
- *fill*         0x0000079a        0x2 
+                0x0000074e       0x30 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x0000074e                GPIOXIntHandler
+ *fill*         0x0000077e        0x2 
  .text.GPIOAIntHandler
-                0x0000079c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000079c                GPIOAIntHandler
+                0x00000780       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000780                GPIOAIntHandler
  .text.GPIOBIntHandler
-                0x000007ac       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007ac                GPIOBIntHandler
+                0x00000790       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000790                GPIOBIntHandler
  .text.GPIOCIntHandler
-                0x000007bc       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007bc                GPIOCIntHandler
+                0x000007a0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007a0                GPIOCIntHandler
  .text.GPIODIntHandler
-                0x000007cc       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007cc                GPIODIntHandler
+                0x000007b0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007b0                GPIODIntHandler
  .text.GPIOEIntHandler
-                0x000007dc       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007dc                GPIOEIntHandler
+                0x000007c0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007c0                GPIOEIntHandler
  .text.GPIOFIntHandler
-                0x000007ec       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007ec                GPIOFIntHandler
+                0x000007d0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007d0                GPIOFIntHandler
  .text.GPIOGIntHandler
-                0x000007fc       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000007fc                GPIOGIntHandler
+                0x000007e0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007e0                GPIOGIntHandler
  .text.GPIOHIntHandler
-                0x0000080c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000080c                GPIOHIntHandler
+                0x000007f0       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x000007f0                GPIOHIntHandler
  .text.GPIOJIntHandler
-                0x0000081c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000081c                GPIOJIntHandler
+                0x00000800       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000800                GPIOJIntHandler
  .text.GPIOKIntHandler
-                0x0000082c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000082c                GPIOKIntHandler
+                0x00000810       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000810                GPIOKIntHandler
  .text.GPIOLIntHandler
-                0x0000083c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000083c                GPIOLIntHandler
+                0x00000820       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000820                GPIOLIntHandler
  .text.GPIOMIntHandler
-                0x0000084c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000084c                GPIOMIntHandler
+                0x00000830       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000830                GPIOMIntHandler
  .text.GPIONIntHandler
-                0x0000085c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000085c                GPIONIntHandler
+                0x00000840       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000840                GPIONIntHandler
  .text.GPIOPIntHandler
-                0x0000086c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000086c                GPIOPIntHandler
+                0x00000850       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000850                GPIOPIntHandler
  .text.GPIOQIntHandler
-                0x0000087c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000087c                GPIOQIntHandler
+                0x00000860       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000860                GPIOQIntHandler
  .text.GPIORIntHandler
-                0x0000088c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000088c                GPIORIntHandler
+                0x00000870       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000870                GPIORIntHandler
  .text.GPIOSIntHandler
-                0x0000089c       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x0000089c                GPIOSIntHandler
+                0x00000880       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000880                GPIOSIntHandler
  .text.GPIOTIntHandler
-                0x000008ac       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
-                0x000008ac                GPIOTIntHandler
+                0x00000890       0x10 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+                0x00000890                GPIOTIntHandler
  .text.timerInit
-                0x000008bc       0x5c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
-                0x000008bc                timerInit
+                0x000008a0       0x5c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
+                0x000008a0                timerInit
  .text.SysTickIntHandler
-                0x00000918       0x28 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
-                0x00000918                SysTickIntHandler
+                0x000008fc       0x28 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
+                0x000008fc                SysTickIntHandler
  .text.analogRead
-                0x00000940       0xe4 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
-                0x00000940                analogRead
- .text._init    0x00000a24      0x15c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
-                0x00000a24                _init
+                0x00000924       0xe4 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
+                0x00000924                analogRead
+ .text._init    0x00000a08      0x15c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
+                0x00000a08                _init
  .text.startup.main
-                0x00000b80       0x1c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
-                0x00000b80                main
+                0x00000b64       0x1c C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
+                0x00000b64                main
  .text._Z3maplllll
-                0x00000b9c       0x14 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
-                0x00000b9c                map(long, long, long, long, long)
+                0x00000b80       0x14 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
+                0x00000b80                map(long, long, long, long, long)
  .text._EEPROMWaitForDone
-                0x00000bb0       0x10 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
+                0x00000b94       0x10 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
  .text._EEPROMSectorMaskClear
-                0x00000bc0       0x34 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
+                0x00000ba4       0x34 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
  .text.EEPROMMassErase
-                0x00000bf4       0x58 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
-                0x00000bf4                EEPROMMassErase
+                0x00000bd8       0x58 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(eeprom.o)
+                0x00000bd8                EEPROMMassErase
  .text.GPIODirModeSet
-                0x00000c4c       0x2e C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000c4c                GPIODirModeSet
+                0x00000c30       0x2e C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000c30                GPIODirModeSet
  .text.GPIOPadConfigSet
-                0x00000c7a      0x130 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000c7a                GPIOPadConfigSet
+                0x00000c5e      0x130 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000c5e                GPIOPadConfigSet
  .text.GPIOIntStatus
-                0x00000daa        0xe C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000daa                GPIOIntStatus
+                0x00000d8e        0xe C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000d8e                GPIOIntStatus
  .text.GPIOIntClear
-                0x00000db8        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000db8                GPIOIntClear
+                0x00000d9c        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000d9c                GPIOIntClear
  .text.GPIOPinWrite
-                0x00000dbe        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000dbe                GPIOPinWrite
+                0x00000da2        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000da2                GPIOPinWrite
  .text.GPIOPinTypeGPIOOutput
-                0x00000dc4       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000dc4                GPIOPinTypeGPIOOutput
+                0x00000da8       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000da8                GPIOPinTypeGPIOOutput
  .text.GPIOPinTypePWM
-                0x00000de0       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000de0                GPIOPinTypePWM
+                0x00000dc4       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000dc4                GPIOPinTypePWM
  .text.GPIOPinTypeUART
-                0x00000dfc       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000dfc                GPIOPinTypeUART
+                0x00000de0       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000de0                GPIOPinTypeUART
  .text.GPIOPinConfigure
-                0x00000e18       0x4c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
-                0x00000e18                GPIOPinConfigure
+                0x00000dfc       0x4c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00000dfc                GPIOPinConfigure
  .text.PWMGenConfigure
-                0x00000e64       0x30 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
-                0x00000e64                PWMGenConfigure
+                0x00000e48       0x30 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
+                0x00000e48                PWMGenConfigure
  .text.PWMGenPeriodSet
-                0x00000e94       0x12 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
-                0x00000e94                PWMGenPeriodSet
+                0x00000e78       0x12 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
+                0x00000e78                PWMGenPeriodSet
  .text.PWMGenEnable
-                0x00000ea6        0xa C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
-                0x00000ea6                PWMGenEnable
+                0x00000e8a        0xa C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
+                0x00000e8a                PWMGenEnable
  .text.PWMPulseWidthSet
-                0x00000eb0       0x1e C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
-                0x00000eb0                PWMPulseWidthSet
+                0x00000e94       0x1e C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
+                0x00000e94                PWMPulseWidthSet
  .text.PWMOutputState
-                0x00000ece       0x10 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
-                0x00000ece                PWMOutputState
- *fill*         0x00000ede        0x2 
+                0x00000eb2       0x10 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(pwm.o)
+                0x00000eb2                PWMOutputState
+ *fill*         0x00000ec2        0x2 
  .text._SysCtlMemTimingGet
-                0x00000ee0       0x24 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000ec4       0x24 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
  .text.SysCtlPeripheralPresent
-                0x00000f04       0x26 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000f04                SysCtlPeripheralPresent
+                0x00000ee8       0x26 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000ee8                SysCtlPeripheralPresent
  .text.SysCtlPeripheralReady
-                0x00000f2a       0x26 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000f2a                SysCtlPeripheralReady
+                0x00000f0e       0x26 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000f0e                SysCtlPeripheralReady
  .text.SysCtlPeripheralReset
-                0x00000f50       0x3a C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000f50                SysCtlPeripheralReset
+                0x00000f34       0x3a C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000f34                SysCtlPeripheralReset
  .text.SysCtlPeripheralEnable
-                0x00000f8a       0x22 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000f8a                SysCtlPeripheralEnable
+                0x00000f6e       0x22 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000f6e                SysCtlPeripheralEnable
  .text.SysCtlPeripheralDisable
-                0x00000fac       0x22 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000fac                SysCtlPeripheralDisable
- *fill*         0x00000fce        0x2 
+                0x00000f90       0x22 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000f90                SysCtlPeripheralDisable
+ *fill*         0x00000fb2        0x2 
  .text.SysCtlDeepSleepPowerSet
-                0x00000fd0        0xc C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000fd0                SysCtlDeepSleepPowerSet
+                0x00000fb4        0xc C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000fb4                SysCtlDeepSleepPowerSet
  .text.SysCtlDelay
-                0x00000fdc        0x8 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000fdc                SysCtlDelay
+                0x00000fc0        0x8 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000fc0                SysCtlDelay
  .text.SysCtlClockFreqSet
-                0x00000fe4      0x248 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x00000fe4                SysCtlClockFreqSet
+                0x00000fc8      0x248 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00000fc8                SysCtlClockFreqSet
  .text.SysCtlPWMClockSet
-                0x0000122c       0x14 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
-                0x0000122c                SysCtlPWMClockSet
+                0x00001210       0x14 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x00001210                SysCtlPWMClockSet
  .text.UARTEnable
-                0x00001240       0x16 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
-                0x00001240                UARTEnable
+                0x00001224       0x16 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
+                0x00001224                UARTEnable
  .text.UARTDisable
-                0x00001256       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
-                0x00001256                UARTDisable
+                0x0000123a       0x1c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
+                0x0000123a                UARTDisable
  .text.UARTConfigSetExpClk
-                0x00001272       0x48 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
-                0x00001272                UARTConfigSetExpClk
+                0x00001256       0x48 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
+                0x00001256                UARTConfigSetExpClk
  .text.UARTCharPut
-                0x000012ba        0xa C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
-                0x000012ba                UARTCharPut
+                0x0000129e        0xa C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
+                0x0000129e                UARTCharPut
  .text.UARTClockSourceSet
-                0x000012c4        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
-                0x000012c4                UARTClockSourceSet
+                0x000012a8        0x6 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(uart.o)
+                0x000012a8                UARTClockSourceSet
  *(.glue_7t)
- .glue_7t       0x000012ca        0x0 linker stubs
+ .glue_7t       0x000012ae        0x0 linker stubs
  *(.glue_7)
- .glue_7        0x000012ca        0x0 linker stubs
+ .glue_7        0x000012ae        0x0 linker stubs
  *(.rodata .rodata* .gnu.linkonce.r.*)
  .rodata.UARTvprintf.str1.1
-                0x000012ca       0x19 ./drivers/uartstdio.o
- *fill*         0x000012e3        0x1 
+                0x000012ae       0x19 ./drivers/uartstdio.o
+ *fill*         0x000012c7        0x1 
  .rodata.g_ui32UARTBase
-                0x000012e4        0xc ./drivers/uartstdio.o
+                0x000012c8        0xc ./drivers/uartstdio.o
  .rodata.g_ui32UARTPeriph
-                0x000012f0        0xc ./drivers/uartstdio.o
+                0x000012d4        0xc ./drivers/uartstdio.o
  .rodata.loop.str1.1
-                0x000012fc        0x8 ./lab2_assignment2.o
+                0x000012e0        0x8 ./lab2_assignment2.o
  .rodata.digital_pin_to_analog_in
-                0x00001304      0x180 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
-                0x00001304                digital_pin_to_analog_in
+                0x000012e8      0x180 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+                0x000012e8                digital_pin_to_analog_in
  .rodata.digital_pin_to_bit_mask
-                0x00001484       0x60 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
-                0x00001484                digital_pin_to_bit_mask
+                0x00001468       0x60 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+                0x00001468                digital_pin_to_bit_mask
  .rodata.digital_pin_to_port
-                0x000014e4       0x60 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
-                0x000014e4                digital_pin_to_port
+                0x000014c8       0x60 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+                0x000014c8                digital_pin_to_port
  .rodata.port_to_base
-                0x00001544       0x40 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
-                0x00001544                port_to_base
+                0x00001528       0x40 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+                0x00001528                port_to_base
  .rodata.g_pui32GPIOBaseAddrs
-                0x00001584       0x90 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
+                0x00001568       0x90 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(gpio.o)
  .rodata.g_pppui32XTALtoVCO
-                0x00001614      0x1b0 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x000015f8      0x1b0 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
  .rodata.g_pui32VCOFrequencies
-                0x000017c4        0x8 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x000017a8        0x8 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
  .rodata.g_sXTALtoMEMTIM
-                0x000017cc       0x30 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x000017b0       0x30 C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
  .rodata.g_pui32Xtals
-                0x000017fc       0x6c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
+                0x000017e0       0x6c C:/Users/josep/AppData/Local/Energia15/packages/energia/hardware/tivac/1.0.3/system/driverlib\libdriverlib.a(sysctl.o)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x00001868                . = ALIGN (0x4)
+                0x0000184c                . = ALIGN (0x4)
  *(.init)
-                0x00001868                . = ALIGN (0x4)
-                0x00001868                __preinit_array_start = .
+                0x0000184c                . = ALIGN (0x4)
+                0x0000184c                __preinit_array_start = .
  *(SORT(.preinit_array*))
  *(.preinit_array)
-                0x00001868                __preinit_array_end = .
-                0x00001868                . = ALIGN (0x4)
-                0x00001868                __init_array_start = .
+                0x0000184c                __preinit_array_end = .
+                0x0000184c                . = ALIGN (0x4)
+                0x0000184c                __init_array_start = .
  *(SORT(.init_array.*))
  *(.init_array)
-                0x00001868                __init_array_end = .
-                0x00001868                . = ALIGN (0x4)
+                0x0000184c                __init_array_end = .
+                0x0000184c                . = ALIGN (0x4)
  *(.fini)
-                0x00001868                . = ALIGN (0x4)
-                0x00001868                __fini_array_start = .
+                0x0000184c                . = ALIGN (0x4)
+                0x0000184c                __fini_array_start = .
  *(.fini_array)
  *(SORT(.fini_array.*))
-                0x00001868                __fini_array_end = .
-                0x00001868                . = ALIGN (0x4)
-                0x00001868                _etext = .
+                0x0000184c                __fini_array_end = .
+                0x0000184c                . = ALIGN (0x4)
+                0x0000184c                _etext = .
 
-.vfp11_veneer   0x00001868        0x0
- .vfp11_veneer  0x00001868        0x0 linker stubs
+.vfp11_veneer   0x0000184c        0x0
+ .vfp11_veneer  0x0000184c        0x0 linker stubs
 
-.v4_bx          0x00001868        0x0
- .v4_bx         0x00001868        0x0 linker stubs
+.v4_bx          0x0000184c        0x0
+ .v4_bx         0x0000184c        0x0 linker stubs
 
-.iplt           0x00001868        0x0
- .iplt          0x00001868        0x0 ./drivers/uartstdio.o
+.iplt           0x0000184c        0x0
+ .iplt          0x0000184c        0x0 ./drivers/uartstdio.o
 
-.rel.dyn        0x00001868        0x0
- .rel.iplt      0x00001868        0x0 ./drivers/uartstdio.o
+.rel.dyn        0x0000184c        0x0
+ .rel.iplt      0x0000184c        0x0 ./drivers/uartstdio.o
 
-.data           0x20000000        0x4 load address 0x00001868
+.data           0x20000000        0x4 load address 0x0000184c
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _data = .
  *(vtable)
@@ -951,10 +949,10 @@ START GROUP
                 0x20000000        0x4 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
                 0x20000004                _edata = .
 
-.igot.plt       0x20000004        0x0 load address 0x0000186c
+.igot.plt       0x20000004        0x0 load address 0x00001850
  .igot.plt      0x20000004        0x0 ./drivers/uartstdio.o
 
-.bss            0x20000004      0x27c load address 0x0000186c
+.bss            0x20000004      0x27c load address 0x00001850
                 0x20000004                . = ALIGN (0x4)
                 0x20000004                _bss = .
  *(.bss .bss*)
@@ -1017,16 +1015,16 @@ LOAD c:/users/josep/appdata/local/energia15/packages/energia/tools/arm-none-eabi
 END GROUP
 OUTPUT(lab2_assignment2.out elf32-littlearm)
 
-.debug_info     0x00000000     0x96cb
+.debug_info     0x00000000     0x96a7
  .debug_info    0x00000000      0x398 ./drivers/uartstdio.o
- .debug_info    0x00000398     0x17ac ./lab2_assignment2.o
- .debug_info    0x00001b44     0x1401 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
- .debug_info    0x00002f45     0x119f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
- .debug_info    0x000040e4     0x1015 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
- .debug_info    0x000050f9     0x1112 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
- .debug_info    0x0000620b      0xf95 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
- .debug_info    0x000071a0     0x152f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
- .debug_info    0x000086cf      0xffc C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
+ .debug_info    0x00000398     0x1788 ./lab2_assignment2.o
+ .debug_info    0x00001b20     0x1401 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+ .debug_info    0x00002f21     0x119f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+ .debug_info    0x000040c0     0x1015 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
+ .debug_info    0x000050d5     0x1112 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
+ .debug_info    0x000061e7      0xf95 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+ .debug_info    0x0000717c     0x152f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
+ .debug_info    0x000086ab      0xffc C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
 
 .debug_abbrev   0x00000000     0x18f8
  .debug_abbrev  0x00000000      0x142 ./drivers/uartstdio.o
@@ -1080,16 +1078,16 @@ OUTPUT(lab2_assignment2.out elf32-littlearm)
  .debug_ranges  0x000002a0       0x18 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
  .debug_ranges  0x000002b8       0x38 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
 
-.debug_line     0x00000000     0x29a6
+.debug_line     0x00000000     0x299b
  .debug_line    0x00000000      0x36e ./drivers/uartstdio.o
- .debug_line    0x0000036e      0x644 ./lab2_assignment2.o
- .debug_line    0x000009b2      0x4ac C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
- .debug_line    0x00000e5e      0x55f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
- .debug_line    0x000013bd      0x4ba C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
- .debug_line    0x00001877      0x43d C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
- .debug_line    0x00001cb4      0x3b2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
- .debug_line    0x00002066      0x54a C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
- .debug_line    0x000025b0      0x3f6 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
+ .debug_line    0x0000036e      0x639 ./lab2_assignment2.o
+ .debug_line    0x000009a7      0x4ac C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(startup_gcc.o)
+ .debug_line    0x00000e53      0x55f C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WInterrupts.o)
+ .debug_line    0x000013b2      0x4ba C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring.o)
+ .debug_line    0x0000186c      0x43d C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_analog.o)
+ .debug_line    0x00001ca9      0x3b2 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(wiring_digital.o)
+ .debug_line    0x0000205b      0x54a C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(main.o)
+ .debug_line    0x000025a5      0x3f6 C:/Users/josep/gitrepos/mdu-embedded-systems/tivac_EK-TM4C1294XL_core/Debug\libtivac_EK-TM4C1294XL_core.a(WMath.o)
 
 .debug_str      0x00000000     0x1910
  .debug_str     0x00000000      0x315 ./drivers/uartstdio.o

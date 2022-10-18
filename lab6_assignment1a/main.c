@@ -74,9 +74,11 @@ unsigned int produce()
 {
     static unsigned int counter = 0;
     printString("PRODUCER: Starts production\n");
+    printString("Before\n");
     vTaskDelay(pdMS_TO_TICKS(1000));
+    printString("After\n");
     char str[50];
-    sprintf(str, "PRODUCER: Produces value %u\n", counter);
+    sprintf(str, "PRODUCER: Produces value %u\n", counter+1);
     printString(str);
     return ++counter;
 }
@@ -123,13 +125,14 @@ void vTaskConsumer(void* pvParameters)
     {
         xSemaphoreTake(consumer_sem, portMAX_DELAY);
 
-        xSemaphoreTake(buffer_sem, portMAX_DELAY);
+        //xSemaphoreTake(buffer_sem, portMAX_DELAY);
+        printString("He entrado3\n");
         value_to_consume = buffer[bottom];
         bottom = (bottom + 1) % BUFFER_SIZE;
         char str[50];
         sprintf(str, "CONSUMER %u: Takes value %u from buffer\n", *(unsigned int*) pvParameters, value_to_consume);
         printString(str);
-        xSemaphoreGive(buffer_sem);
+//        xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem);
 
@@ -148,6 +151,7 @@ void vScheduling()
 
     xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
                 &ucParameterToPass, tskIDLE_PRIORITY + 1, NULL);
+
     unsigned int i;
     for (i = 0; i < CONSUMERS_NUMBER; i++)
     {
@@ -155,8 +159,6 @@ void vScheduling()
         xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
                     (void* ) consumers[i], tskIDLE_PRIORITY + 1, NULL);
     }
-
-    xSemaphoreGive(buffer_sem);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -171,9 +173,11 @@ int main(void)
     bottom = top;
 
     // Create semaphores
-    producer_sem = xSemaphoreCreateCounting(1, 1);
+    producer_sem = xSemaphoreCreateCounting(BUFFER_SIZE, BUFFER_SIZE);
     consumer_sem = xSemaphoreCreateCounting(5, 0);
     buffer_sem = xSemaphoreCreateBinary();
+
+    xSemaphoreGive(buffer_sem);
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
