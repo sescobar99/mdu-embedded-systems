@@ -17,13 +17,9 @@
 #include "inc/tm4c129encpdt.h"
 #include <string.h>
 
-#define BUFFER_SIZE 10
-#define CONSUMERS_NUMBER 5
+static volatile SemaphoreHandle_t producer_sem, consumer_sem;
 
-static volatile SemaphoreHandle_t producer_sem, consumer_sem, buffer_sem;
-
-static volatile unsigned int buffer[BUFFER_SIZE], top, bottom;
-static volatile unsigned int consumers[CONSUMERS_NUMBER];
+static volatile unsigned int buffer;
 
 void configureUART(void)
 {
@@ -102,12 +98,10 @@ void vTaskProducer(void* pvParameters)
     {
         produced_val = produce(); // Produce
 
-        xSemaphoreTake(producer_sem, portMAX_DELAY);
+        while (buffer != 0)
+            vTaskDelay(pdMS_TO_TICKS(100)); // Checking the buffer with pulling technique
 
-        buffer[top] = produced_val;
-        top = (top + 1) % BUFFER_SIZE;
-
-        xSemaphoreGive(consumer_sem);
+        buffer = produced_val;
     }
 }
 // CONSUMER
@@ -116,15 +110,11 @@ void vTaskConsumer(void* pvParameters)
     unsigned int value_to_consume;
     while (1)
     {
-        xSemaphoreTake(consumer_sem, portMAX_DELAY);
+        while (buffer == 0)
+            vTaskDelay(pdMS_TO_TICKS(100));
 
-        xSemaphoreTake(buffer_sem, portMAX_DELAY);
-        value_to_consume = buffer[bottom];
-        bottom = (bottom + 1) % BUFFER_SIZE;
-        xSemaphoreGive(buffer_sem);
-
-        xSemaphoreGive(producer_sem);
-
+        value_to_consume = buffer;
+        buffer = 0;
         consume(value_to_consume);
     }
 }
@@ -136,17 +126,13 @@ void vTaskConsumer(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-    static unsigned char ucParameterToPass;
+    static unsigned char ucParameterToPass1, ucParameterToPass2;
+    xTaskHandle xHandle1, xHandle2;
 
     xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                &ucParameterToPass, tskIDLE_PRIORITY + 1, NULL);
-    unsigned int i;
-    for (i = 0; i < CONSUMERS_NUMBER; i++)
-    {
-        consumers[i] = i;
-        xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
-                    (void*) consumers[i], tskIDLE_PRIORITY + 1, NULL);
-    }
+                &ucParameterToPass1, tskIDLE_PRIORITY + 2, &xHandle1);
+    xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
+                &ucParameterToPass2, tskIDLE_PRIORITY + 1, &xHandle2);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -157,13 +143,9 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
-    top = 0;
-    bottom = top;
+    buffer = 0; // Init buffer
 
-    // Create semaphores
-    producer_sem = xSemaphoreCreateCounting(1, 0);
-    consumer_sem = xSemaphoreCreateCounting(5, 5);
-    buffer_sem = xSemaphoreCreateBinary();
+    //bin_sem = xSemaphoreCreateBinary(); // Create semaphore
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
