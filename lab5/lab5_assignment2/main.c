@@ -4,7 +4,9 @@
 #include "croutine.h"
 #include "semphr.h"
 
-#define SECOND 1000000
+
+#define DEBUG 0
+#define TIME_SIZE 100
 
 //*******************************************************
 // Debug (UART)
@@ -23,9 +25,9 @@
 
 static volatile SemaphoreHandle_t bin_sem;
 
-static const unsigned int task_A_period = pdMS_TO_TICKS(10000);
-static const unsigned int task_B_period = pdMS_TO_TICKS(20000);
-static const unsigned int task_C_period = pdMS_TO_TICKS(20000);
+static const unsigned int task_A_period = pdMS_TO_TICKS(10 * TIME_SIZE);
+static const unsigned int task_B_period = pdMS_TO_TICKS(20 * TIME_SIZE);
+static const unsigned int task_C_period = pdMS_TO_TICKS(20 * TIME_SIZE);
 
 void configureUART(void)
 {
@@ -49,21 +51,40 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
-void idleWork(int seconds)
+void idleWork(int seconds, char* pcTask)
 {
     TickType_t currentTick = xTaskGetTickCount();
-    while (xTaskGetTickCount() - currentTick < pdMS_TO_TICKS(seconds * 1000))
+#if DEBUG
+    char str[50];
+    sprintf(str, "Task %s: WORKLOAD", pcTask);
+    int i = 0;
+    printString("\n");
+#endif
+    while (xTaskGetTickCount() - currentTick < pdMS_TO_TICKS(seconds * TIME_SIZE))
     {
+#if DEBUG
+        if (i % 10 * TIME_SIZE == 0)
+        {
+            printString(str);
+        }
+        i++;
+#endif
     }
 }
 
-void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char cTask)
+void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char* pcTask)
 {
     TickType_t xPeriodLimit = xLastWakeTime + period;
     TickType_t xActualTime = xTaskGetTickCount();
     if (xPeriodLimit < xActualTime)
     {
-        printString("DEADLINE MISSED\n");
+        char str[50];
+
+        unsigned int ms_miss = (xActualTime - xPeriodLimit) * portTICK_PERIOD_MS;
+
+        sprintf(str, "Task %s: DEADLINE MISSED by %u ms \n", pcTask, ms_miss);
+        printString(str);
+
     }
     else
     {
@@ -80,35 +101,35 @@ void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char cTask)
 void vTaskA(void* pvParameters)
 {
     TickType_t xLastWakeTime, xPeriodLimit, xActualTime;
-    vTaskDelay(pdMS_TO_TICKS(3000));
+    vTaskDelay(pdMS_TO_TICKS(3 * TIME_SIZE));
     while (1)
     {
         xLastWakeTime = xTaskGetTickCount();
 
         printString("Task A: Started\n");
-        idleWork(1);
+        idleWork(1, "A");
         // Enters cs
         xSemaphoreTake(bin_sem, portMAX_DELAY);
         printString("Task A: sem take\n");
         int i;
         for (i = 0; i < 2; i++)
         {
-            idleWork(1);
+            idleWork(1, "A");
         }
         printString("Task A: sem give\n");
         xSemaphoreGive(bin_sem);
         // Leaves cs
-        idleWork(1);
+        idleWork(1, "A");
         printString("Task A: Finished\n");
 
-        deadlineMiss(xLastWakeTime, task_A_period, 'A');
+        deadlineMiss(xLastWakeTime, task_A_period, "A");
     }
 }
 // Medium priority task
 void vTaskB(void* pvParameters)
 {
     TickType_t xLastWakeTime, xPeriodLimit, xActualTime;
-    vTaskDelay(pdMS_TO_TICKS(6000));
+    vTaskDelay(pdMS_TO_TICKS(6 * TIME_SIZE));
     while (1)
     {
         xLastWakeTime = xTaskGetTickCount();
@@ -117,11 +138,11 @@ void vTaskB(void* pvParameters)
         int i;
         for (i = 0; i < 4; i++)
         {
-            idleWork(1);
+            idleWork(1, "B");
         }
         printString("Task B: Finished\n");
 
-        deadlineMiss(xLastWakeTime, task_B_period, 'B');
+        deadlineMiss(xLastWakeTime, task_B_period, "B");
     }
 }
 // Low priority task
@@ -133,22 +154,22 @@ void vTaskC(void* pvParameters)
         xLastWakeTime = xTaskGetTickCount();
 
         printString("Task C: Started\n");
-        idleWork(1);
+        idleWork(1, "C");
         // Enters cs
         xSemaphoreTake(bin_sem, 0);
         printString("Task C: sem take\n");
         int i;
         for (i = 0; i < 6; i++)
         {
-            idleWork(1);
+            idleWork(1, "C");
         }
         printString("Task C: sem give\n");
         xSemaphoreGive(bin_sem);
         // Leaves cs
-        idleWork(1);
+        idleWork(1, "C");
         printString("Task C: Finished\n");
 
-        deadlineMiss(xLastWakeTime, task_C_period, 'C');
+        deadlineMiss(xLastWakeTime, task_C_period, "C");
     }
 }
 
