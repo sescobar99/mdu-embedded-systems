@@ -43,29 +43,6 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
-void idleWork(int seconds)
-{
-    TickType_t currentTick = xTaskGetTickCount();
-    while (xTaskGetTickCount() - currentTick < pdMS_TO_TICKS(seconds * 1000))
-    {
-    }
-}
-
-void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char cTask)
-{
-    TickType_t xPeriodLimit = xLastWakeTime + period;
-    TickType_t xActualTime = xTaskGetTickCount();
-    if (xPeriodLimit < xActualTime)
-    {
-        printString("DEADLINE MISSED\n");
-    }
-    else
-    {
-        vTaskDelayUntil(&xLastWakeTime, period);
-    }
-
-}
-
 unsigned int produce()
 {
     static unsigned int counter = 0;

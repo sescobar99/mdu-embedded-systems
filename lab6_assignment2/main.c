@@ -99,7 +99,7 @@ void vTaskConsumer(void* pvParameters)
         xSemaphoreTake(buffer_sem, portMAX_DELAY);
         value_to_consume = buffer[bottom];
         bottom = (bottom + 1) % BUFFER_SIZE;
-        printString("A CONSUMER: Taks a value from the buffer\n");
+        printString("A CONSUMER: Takes a value from the buffer\n");
         xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem);
@@ -115,18 +115,10 @@ void vTaskConsumer(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-    static unsigned char ucParameterToPass;
+    static unsigned char parameters1, parameters2;
 
     xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                &ucParameterToPass, tskIDLE_PRIORITY + 1, NULL);
-
-    unsigned int i;
-    for (i = 0; i < CONSUMERS_NUMBER; i++)
-    {
-        consumers[i] = i;
-        xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
-                    (void* ) consumers[i], tskIDLE_PRIORITY + 1, NULL);
-    }
+                &parameters1, tskIDLE_PRIORITY + 1, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
