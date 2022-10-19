@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
@@ -15,12 +17,12 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "inc/tm4c129encpdt.h"
-#include <string.h>
 
 #define BUFFER_SIZE 10
 #define CONSUMERS_NUMBER 5
 
-static volatile SemaphoreHandle_t producer_sem, consumer_sem, buffer_sem;
+static volatile SemaphoreHandle_t producer_sem, consumer_sem, buffer_sem,
+        debug_sem;
 
 static volatile unsigned int buffer[BUFFER_SIZE], top, bottom;
 static volatile unsigned int consumers[CONSUMERS_NUMBER];
@@ -38,7 +40,7 @@ void configureUART(void)
                         UART_CONFIG_PAR_NONE));
 }
 
-void printString(char* str)
+void printString(char* str, ...)
 {
     while (*str)
     {
@@ -73,24 +75,39 @@ void deadlineMiss(TickType_t xLastWakeTime, TickType_t period, char cTask)
 unsigned int produce()
 {
     static unsigned int counter = 0;
+    char str[100];
+
+    taskENTER_CRITICAL();
     printString("PRODUCER: Starts production\n");
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    char str[50];
-    sprintf(str, "PRODUCER: Produces value %u\n", counter+1);
-    printString(str);
+    taskEXIT_CRITICAL();
+
+    vTaskDelay(pdMS_TO_TICKS(200));
+
+    taskENTER_CRITICAL();
+//    sprintf(str, "PRODUCER: Produces value %u\n", counter + 1);
+    printString("PRODUCER: Produces value v\n");
+    taskEXIT_CRITICAL();
+
     return ++counter;
 }
 
 void consume(unsigned int value_to_consume, unsigned int task)
 {
-    char str[50];
-    sprintf(str, "CONSUMER %u: Starts consuming value %u\n", task,
-            value_to_consume);
-    printString(str);
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    sprintf(str, "CONSUMER %u: Finishes consuming value %u\n", task,
-            value_to_consume);
-    printString(str);
+    char str[1000];
+
+    taskENTER_CRITICAL();
+//    sprintf(str, "CONSUMER %u: Starts consuming value %u\n", task,
+//            value_to_consume);
+    printString("CONSUMER X: Starts consuming value v \n");
+    taskEXIT_CRITICAL();
+
+    vTaskDelay(pdMS_TO_TICKS(3000));
+
+    taskENTER_CRITICAL();
+//    sprintf(str, "CONSUMER %u: Finishes consuming value %u\n", task,
+//            value_to_consume);
+    printString("CONSUMER X: Finishes consuming value v \n");
+    taskEXIT_CRITICAL();
 }
 
 //*******************************************************
@@ -107,9 +124,13 @@ void vTaskProducer(void* pvParameters)
         xSemaphoreTake(producer_sem, portMAX_DELAY);
 
         buffer[top] = produced_val;
-        char str[50];
-        sprintf(str, "PRODUCER: Put value %u in buffer\n", produced_val);
-        printString(str);
+        char str[100];
+
+        taskENTER_CRITICAL();
+//        sprintf(str, "PRODUCER: Put value %u in buffer\n", produced_val);
+        printString("PRODUCER: Put value v in buffer\n");
+        taskEXIT_CRITICAL();
+
         top = (top + 1) % BUFFER_SIZE;
 
         xSemaphoreGive(consumer_sem);
@@ -123,15 +144,17 @@ void vTaskConsumer(void* pvParameters)
     {
         xSemaphoreTake(consumer_sem, portMAX_DELAY);
 
-        //xSemaphoreTake(buffer_sem, portMAX_DELAY);
-        printString("He entrado3\n");
+        xSemaphoreTake(buffer_sem, portMAX_DELAY);
         value_to_consume = buffer[bottom];
         bottom = (bottom + 1) % BUFFER_SIZE;
-        char str[50];
+        char str[100];
         unsigned int* task = (unsigned int*) pvParameters;
-        sprintf(str, "CONSUMER 0: Takes value %u from buffer\n", value_to_consume);
-        printString(str);
-//        xSemaphoreGive(buffer_sem);
+        taskENTER_CRITICAL();
+//        sprintf(str, "CONSUMER 0: Takes value %u from buffer\n",
+//                value_to_consume);
+        printString("CONSUMER X: Takes value v from buffer\n");
+        taskEXIT_CRITICAL();
+        xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem);
 
@@ -175,8 +198,10 @@ int main(void)
     producer_sem = xSemaphoreCreateCounting(BUFFER_SIZE, BUFFER_SIZE);
     consumer_sem = xSemaphoreCreateCounting(5, 0);
     buffer_sem = xSemaphoreCreateBinary();
+    debug_sem = xSemaphoreCreateBinary();
 
     xSemaphoreGive(buffer_sem);
+    xSemaphoreGive(debug_sem);
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
