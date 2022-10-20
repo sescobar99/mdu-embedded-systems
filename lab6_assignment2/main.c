@@ -31,7 +31,7 @@
 #define DELETE 127
 
 static volatile char buffer[BUFFER_SIZE];
-static volatile char erase[BUFFER_SIZE];
+static volatile char empty[BUFFER_SIZE];
 
 static volatile char* reverseLineFeed = "\033[A";
 static volatile int inputCount = 0;
@@ -57,24 +57,24 @@ void configureButtons(void)
 }
 
 // int to string
-char* itos (int number)
+void itos(int number, char* str)
 {
     const int size = 10;
     int digits[size];
-    int i = 0, e;
+    int i = 0, e = 0;
     while (1)
     {
         digits[i++] = number % 10;
         number /= 10;
-        if (number == 0) break;
+        if (number == 0)
+            break;
     }
-    char* str = (char*) calloc(i, sizeof(char));
-    for (e = 0; i > 0; i--, e++)
+    i -= 1;
+    while (i > -1)
     {
-        *(str + e) = digits[i-1] + '0';
+        str[e++] = digits[i--] + '0';
     }
-    return str;
-
+    str[e] = 0;
 }
 
 void addElement(char str[], int length, char newElement)
@@ -123,12 +123,21 @@ void vPrintLastChars(void* pvParameters)
 
 void vStatusTask(void* pvParameters)
 {
+    char str[10];
+    int lastInputCountValue = inputCount;
     while (1)
     {
         xSemaphoreTake(status_task_sem, portMAX_DELAY);
-        printString(itos(inputCount));
+        if (inputCount != lastInputCountValue)
+        {
+            lastInputCountValue = inputCount;
+
+            printString("\n");
+            itos(inputCount, str);
+            printString(str);
+            printString(reverseLineFeed);
+        }
         xSemaphoreGive(status_task_sem);
-        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -146,7 +155,9 @@ void vActivateAuxTask(void* pvParameters)
             xSemaphoreGive(status_task_sem);
             vTaskDelay(pdMS_TO_TICKS(10000));
             xSemaphoreTake(status_task_sem, portMAX_DELAY);
-            printString("TENGO SEMAFOROOOO\n");
+            printString("\n");
+            printString(empty);
+            printString(reverseLineFeed);
         }
     }
 
@@ -181,10 +192,10 @@ int main(void)
     //Init arrays
     for (i = 0; i < BUFFER_SIZE; i++)
     {
-        erase[i] = DELETE;
+        empty[i] = SPACE;
         buffer[i] = SPACE;
     }
-    erase[BUFFER_SIZE - 1] = NULL_CHARACTER;
+    empty[BUFFER_SIZE - 1] = NULL_CHARACTER;
     buffer[BUFFER_SIZE - 1] = NULL_CHARACTER;
 
     configureButtons();
