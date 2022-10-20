@@ -16,6 +16,8 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
+#include "drivers/buttons.h"
+#include "drivers/pinout.h"
 
 #define BUFFER_SIZE 16 //Creates 15 position char array + null terminated
 
@@ -28,6 +30,9 @@
 
 static volatile char buffer[BUFFER_SIZE];
 static volatile char erase[BUFFER_SIZE];
+
+static volatile char* reverseLineFeed = "\033[A";
+static volatile int inputCount = 0;
 
 void configureUART(void)
 {
@@ -61,6 +66,7 @@ void printString(char* str, ...)
         UARTCharPut(UART0_BASE, *(str++));
     }
     UARTCharPut(UART0_BASE, CARRIAGE_RETURN);
+//    UARTCharPut(UART0_BASE, LINE_FEED);
 }
 
 //*******************************************************
@@ -77,15 +83,41 @@ void vPrintLastChars(void* pvParameters)
     while (1)
     {
         printString(buffer);
+        printString("ab\n");
+        printString(reverseLineFeed);
+        printString("c\n");
+
         while (!UARTCharsAvail(UART0_BASE))
         {
         }
         inputChar = UARTCharGetNonBlocking(UART0_BASE);
+        inputCount++;
         addElement(buffer, BUFFER_SIZE, inputChar);
 //        if(inputChar == )
 
     }
 }
+
+
+void vCheckButtons(void* pvParameters)
+{
+    unsigned char ucDelta, ucState;
+    while (1)
+    {
+        ucState = ButtonsPoll(&ucDelta, 0);
+        //check both buttons
+        if ((GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x1) == 0 || (GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x2) == 0)
+        {
+//            left_pressed = 1;
+            LEDWrite(CLP_D1, 1);
+            vTaskDelay(pdMS_TO_TICKS(10000));
+            LEDWrite(CLP_D1, 0);
+//            left_pressed = 0;
+        }
+    }
+}
+
+
 
 //*******************************************************
 // Scheduling
