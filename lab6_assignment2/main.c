@@ -83,9 +83,9 @@ void vPrintLastChars(void* pvParameters)
     while (1)
     {
         printString(buffer);
-        printString("ab\n");
-        printString(reverseLineFeed);
-        printString("c\n");
+//        printString("ab\n");
+//        printString(reverseLineFeed);
+//        printString("c\n");
 
         while (!UARTCharsAvail(UART0_BASE))
         {
