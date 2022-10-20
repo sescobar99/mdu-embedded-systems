@@ -17,13 +17,17 @@
 #include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
 
-#define BUFFER_SIZE 10
-#define CONSUMERS_NUMBER 5
+#define BUFFER_SIZE 16 //Creates 15 position char array + null terminated
 
-static volatile SemaphoreHandle_t producer_sem, consumer_sem, buffer_sem;
+#define NULL_CHARACTER 0
+#define BACKSPACE 8
+#define LINE_FEED 10
+#define CARRIAGE_RETURN 13
+#define SPACE 32
+#define DELETE 127
 
-static volatile unsigned int buffer[BUFFER_SIZE], top, bottom;
-static volatile unsigned int consumers[CONSUMERS_NUMBER];
+static volatile char buffer[BUFFER_SIZE];
+static volatile char erase[BUFFER_SIZE];
 
 void configureUART(void)
 {
@@ -38,73 +42,48 @@ void configureUART(void)
                         UART_CONFIG_PAR_NONE));
 }
 
+void addElement(char str[], int lenght, char newElement)
+{
+    int i;
+    for (i = 0; i < lenght - 2; i++)
+    {
+        str[i] = str[i + 1];
+    }
+    str[lenght - 2] = newElement;
+    str[lenght - 1] = NULL_CHARACTER;
+    return;
+}
+
 void printString(char* str, ...)
 {
     while (*str)
     {
         UARTCharPut(UART0_BASE, *(str++));
     }
-    UARTCharPut(UART0_BASE, 13);
-}
-
-unsigned int produce()
-{
-    static unsigned int counter = 0;
-    printString("PRODUCER: Starts production\n");
-
-    vTaskDelay(pdMS_TO_TICKS(200));
-
-    printString("PRODUCER: Produces a value\n");
-
-    return ++counter;
-}
-
-void consume()
-{
-    printString("A CONSUMER: Starts consuming a value\n");
-
-    vTaskDelay(pdMS_TO_TICKS(3000));
-
-    printString("A CONSUMER: Finishes consuming a value\n");
+    UARTCharPut(UART0_BASE, CARRIAGE_RETURN);
 }
 
 //*******************************************************
 // Tasks code
 //*******************************************************
-// PRODUCER
-void vTaskProducer(void* pvParameters)
+
+/*
+ * Prints last BUFFER_SIZE-1 chars stored in the buffer.
+ * Waits for next inputs and updates the buffer
+ */
+void vPrintLastChars(void* pvParameters)
 {
-    unsigned int produced_val;
+    char inputChar;
     while (1)
     {
-        produced_val = produce(); // Produce
+        printString(buffer);
+        while (!UARTCharsAvail(UART0_BASE))
+        {
+        }
+        inputChar = UARTCharGetNonBlocking(UART0_BASE);
+        addElement(buffer, BUFFER_SIZE, inputChar);
+//        if(inputChar == )
 
-        xSemaphoreTake(producer_sem, portMAX_DELAY);
-
-        buffer[top] = produced_val;
-        printString("PRODUCER: Puts a value in the buffer\n");
-        top = (top + 1) % BUFFER_SIZE;
-
-        xSemaphoreGive(consumer_sem);
-    }
-}
-// CONSUMER
-void vTaskConsumer(void* pvParameters)
-{
-    unsigned int value_to_consume;
-    while (1)
-    {
-        xSemaphoreTake(consumer_sem, portMAX_DELAY);
-
-        xSemaphoreTake(buffer_sem, portMAX_DELAY);
-        value_to_consume = buffer[bottom];
-        bottom = (bottom + 1) % BUFFER_SIZE;
-        printString("A CONSUMER: Takes a value from the buffer\n");
-        xSemaphoreGive(buffer_sem);
-
-        xSemaphoreGive(producer_sem);
-
-        consume();
     }
 }
 
@@ -115,10 +94,9 @@ void vTaskConsumer(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-    static unsigned char parameters1, parameters2;
 
-    xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                &parameters1, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vPrintLastChars, "UART", configMINIMAL_STACK_SIZE,
+                (void * ) BUFFER_SIZE, tskIDLE_PRIORITY + 1, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -129,17 +107,15 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
-    top = 0;
-    bottom = top;
-
-    // Create semaphores
-    producer_sem = xSemaphoreCreateCounting(BUFFER_SIZE, BUFFER_SIZE);
-    consumer_sem = xSemaphoreCreateCounting(5, 0);
-    buffer_sem = xSemaphoreCreateBinary();
-    debug_sem = xSemaphoreCreateBinary();
-
-    xSemaphoreGive(buffer_sem);
-    xSemaphoreGive(debug_sem);
+    int i;
+    //Init arrays
+    for (i = 0; i < BUFFER_SIZE; i++)
+    {
+        erase[i] = DELETE;
+        buffer[i] = SPACE;
+    }
+    erase[BUFFER_SIZE - 1] = NULL_CHARACTER;
+    buffer[BUFFER_SIZE - 1] = NULL_CHARACTER;
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
@@ -147,4 +123,5 @@ int main(void)
     while (1)
     {
     }
+
 }

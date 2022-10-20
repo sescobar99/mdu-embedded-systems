@@ -5,8 +5,8 @@
 #include "semphr.h"
 
 
-#define DEBUG 0
-#define TIME_SIZE 100
+#define DEBUG 1
+#define TIME_SIZE 1000
 
 //*******************************************************
 // Debug (UART)
@@ -63,7 +63,7 @@ void idleWork(int seconds, char* pcTask)
     while (xTaskGetTickCount() - currentTick < pdMS_TO_TICKS(seconds * TIME_SIZE))
     {
 #if DEBUG
-        if (i % 10 * TIME_SIZE == 0)
+        if (i % 5000 * TIME_SIZE == 0)
         {
             printString(str);
         }
