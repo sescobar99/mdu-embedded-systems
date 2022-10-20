@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
@@ -34,6 +36,8 @@ static volatile char erase[BUFFER_SIZE];
 static volatile char* reverseLineFeed = "\033[A";
 static volatile int inputCount = 0;
 
+static volatile SemaphoreHandle_t status_task_sem;
+
 void configureUART(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
@@ -47,19 +51,44 @@ void configureUART(void)
                         UART_CONFIG_PAR_NONE));
 }
 
-void addElement(char str[], int lenght, char newElement)
+void configureButtons(void)
+{
+    ButtonsInit();
+}
+
+// int to string
+char* itos (int number)
+{
+    const int size = 10;
+    int digits[size];
+    int i = 0, e;
+    while (1)
+    {
+        digits[i++] = number % 10;
+        number /= 10;
+        if (number == 0) break;
+    }
+    char* str = (char*) calloc(i, sizeof(char));
+    for (e = 0; i > 0; i--, e++)
+    {
+        *(str + e) = digits[i-1] + '0';
+    }
+    return str;
+
+}
+
+void addElement(char str[], int length, char newElement)
 {
     int i;
-    for (i = 0; i < lenght - 2; i++)
+    for (i = 0; i < length - 2; i++)
     {
         str[i] = str[i + 1];
     }
-    str[lenght - 2] = newElement;
-    str[lenght - 1] = NULL_CHARACTER;
-    return;
+    str[length - 2] = newElement;
+    str[length - 1] = NULL_CHARACTER;
 }
 
-void printString(char* str, ...)
+void printString(char* str)
 {
     while (*str)
     {
@@ -83,41 +112,45 @@ void vPrintLastChars(void* pvParameters)
     while (1)
     {
         printString(buffer);
-//        printString("ab\n");
-//        printString(reverseLineFeed);
-//        printString("c\n");
-
         while (!UARTCharsAvail(UART0_BASE))
         {
         }
         inputChar = UARTCharGetNonBlocking(UART0_BASE);
         inputCount++;
         addElement(buffer, BUFFER_SIZE, inputChar);
-//        if(inputChar == )
-
     }
 }
 
+void vStatusTask(void* pvParameters)
+{
+    while (1)
+    {
+        xSemaphoreTake(status_task_sem, portMAX_DELAY);
+        printString(itos(inputCount));
+        xSemaphoreGive(status_task_sem);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 
-void vCheckButtons(void* pvParameters)
+void vActivateAuxTask(void* pvParameters)
 {
     unsigned char ucDelta, ucState;
     while (1)
     {
         ucState = ButtonsPoll(&ucDelta, 0);
         //check both buttons
-        if ((GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x1) == 0 || (GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x2) == 0)
+        if ((GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x1) == 0
+                || (GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x2)
+                        == 0)
         {
-//            left_pressed = 1;
-            LEDWrite(CLP_D1, 1);
+            xSemaphoreGive(status_task_sem);
             vTaskDelay(pdMS_TO_TICKS(10000));
-            LEDWrite(CLP_D1, 0);
-//            left_pressed = 0;
+            xSemaphoreTake(status_task_sem, portMAX_DELAY);
+            printString("TENGO SEMAFOROOOO\n");
         }
     }
+
 }
-
-
 
 //*******************************************************
 // Scheduling
@@ -126,9 +159,12 @@ void vCheckButtons(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-
-    xTaskCreate(vPrintLastChars, "UART", configMINIMAL_STACK_SIZE,
-                (void * ) BUFFER_SIZE, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vPrintLastChars, "UART", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vStatusTask, "STATUS TASK", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vActivateAuxTask, "ACTIVATION", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -139,6 +175,8 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
+    status_task_sem = xSemaphoreCreateCounting(1, 0);
+
     int i;
     //Init arrays
     for (i = 0; i < BUFFER_SIZE; i++)
@@ -149,11 +187,8 @@ int main(void)
     erase[BUFFER_SIZE - 1] = NULL_CHARACTER;
     buffer[BUFFER_SIZE - 1] = NULL_CHARACTER;
 
+    configureButtons();
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
-
-    while (1)
-    {
-    }
 
 }
