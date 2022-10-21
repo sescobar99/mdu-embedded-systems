@@ -1,3 +1,15 @@
+/**
+ * MDU ES Lab5 Assignment 1
+ * Write a program using FreeRTOS that blinks the LEDs at different intervals, LED1 = 1 second, LED2 = 2 second, LED3 = 3 second, LED4 = 4 second.
+ * Pressing a button (1-2) should make the corresponding LED (1-2) stay lit for 10 seconds while the others keep blinking.
+ * If  both  buttons  are  pressed,  one  after  another,  both  LEDs  should  light  up.
+ * When 10 seconds has passed, the affected LED should go back into its original state,i.e., pressing the button should NOT make the LEDs blink out of sync.
+ * Make the various task  output their actions to the serial port.
+ *  Josep Naranjo
+ *  &
+ *  Santiago Escobar
+ */
+//*****************************************************************************
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -25,6 +37,34 @@
 
 static volatile unsigned int left_pressed = 0;
 static volatile unsigned int right_pressed = 0;
+
+
+//*******************************************************
+// Helper functions
+//*******************************************************
+
+void configureUART(void)
+{
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
+    UARTConfigSetExpClk(UART0_BASE, 16000000, 9600,
+                        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+                        UART_CONFIG_PAR_NONE));
+}
+
+void printString(char* str)
+{
+    while (*str)
+    {
+        UARTCharPut(UART0_BASE, *(str++));
+    }
+    UARTCharPut(UART0_BASE, 13);
+}
+
 
 void configureButtons(void)
 {
@@ -55,8 +95,10 @@ void vTaskA(void* pvParameters)
     while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(1000));
-        if (left_pressed == 0)
+        if (left_pressed == 0){
             LEDWrite(CLP_D1, val);
+            printString(val == 1 ? "LED 1 ON\n" : "LED 1 OFF\n");
+        }
         val = val == 1 ? 0 : 1;
     }
 }
@@ -69,8 +111,10 @@ void vTaskB(void* pvParameters)
     while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(2000));
-        if (right_pressed == 0)
+        if (right_pressed == 0){
             LEDWrite(CLP_D2, val);
+            printString(val == 2 ? "LED 2 ON\n" : "LED 2 OFF\n");
+        }
         val = val == 2 ? 0 : 2;
     }
 }
@@ -83,6 +127,7 @@ void vTaskC(void* pvParameters)
     {
         vTaskDelay(pdMS_TO_TICKS(3000));
         LEDWrite(CLP_D3, val);
+        printString(val == 4 ? "LED 3 ON\n" : "LED 3 OFF\n");
         val = val == 4 ? 0 : 4;
     }
 }
@@ -95,6 +140,7 @@ void vTaskD(void* pvParameters)
     {
         vTaskDelay(pdMS_TO_TICKS(4000));
         LEDWrite(CLP_D4, val);
+        printString(val == 8 ? "LED 4 ON\n" : "LED 4 OFF\n");
         val = val == 8 ? 0 : 8;
     }
 }
@@ -110,8 +156,10 @@ void vTaskE(void* pvParameters)
         {
             left_pressed = 1;
             LEDWrite(CLP_D1, 1);
+            printString("LEFT button pressed, LED 1 ON for 10 seconds\n");
             vTaskDelay(pdMS_TO_TICKS(10000));
             LEDWrite(CLP_D1, 0);
+            printString("LED 1 OFF\n");
             left_pressed = 0;
         }
     }
@@ -128,8 +176,10 @@ void vTaskF(void* pvParameters)
         {
             right_pressed = 1;
             LEDWrite(CLP_D2, 2);
+            printString("RIGHT button pressed, LED 2 ON for 10 seconds\n");
             vTaskDelay(pdMS_TO_TICKS(10000));
             LEDWrite(CLP_D2, 0);
+            printString("LED 1 OFF\n");
             right_pressed = 0;
         }
     }
@@ -171,6 +221,7 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
+    configureUART();
     configureLEDS();
     configureButtons();
     vScheduling();
