@@ -16,15 +16,16 @@
 #include "driverlib/pwm.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
-#include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
 #include "drivers/buttons.h"
 #include "drivers/pinout.h"
 #include "driverlib/adc.h"
 
+#define CARRIAGE_RETURN 13
+
 // Queues
 static volatile QueueHandle_t microphoneQueue, joystickQueue,
-        accelerometerqQueue;
+        accelerometerQueue;
 
 struct microphoneMsg
 {
@@ -61,22 +62,26 @@ void configureADC(void)
     GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_2);    // Accelerometer z
     // Configure ADC sequencer
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH1));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH2));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH9));
+//    ADCSequenceEnable(ADC0_BASE, 3);
+//    ADCProcessorTrigger(ADC0_BASE, 3);
+//    while (!ADCIntStatus(ADC0_BASE, 3, false))
+//    {
+//
+//    }
+//    ADCIntClear(ADC0_BASE, 3);
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0));
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH1));
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH2));
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH9));
+                             ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH8 | ADC_CTL_CMP0);
     ADCSequenceEnable(ADC0_BASE, 3);
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    while (!ADCIntStatus(ADC0_BASE, 3, false))
-    {
-
-    }
     ADCIntClear(ADC0_BASE, 3);
 }
 // configure UART
@@ -129,20 +134,22 @@ void printString(char* str)
 //*******************************************************
 void vMicrophoneManager(void* pvParameters)
 {
+    uint32_t pui32Buffer;
+    char str[15];
     while (1)
     {
-        uint32_t *pui32Buffer;
 
-        ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                                 (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH8));
-        ADCSequenceEnable(ADC0_BASE, 3);
         ADCProcessorTrigger(ADC0_BASE, 3);
         while (!ADCIntStatus(ADC0_BASE, 3, false))
         {
 
         }
+        printString("Hola\n");
         ADCIntClear(ADC0_BASE, 3);
-        ADCSequenceDataGet(ADC0_BASE, 3, );
+        ADCSequenceDataGet(ADC0_BASE, 3, &pui32Buffer);
+        itos(pui32Buffer, str);
+        printString(str);
+        printString("\n");
     }
 }
 void vJoystickManager(void* pvParameters)
