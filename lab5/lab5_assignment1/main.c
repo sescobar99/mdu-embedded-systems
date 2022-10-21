@@ -26,20 +26,12 @@
 static volatile unsigned int left_pressed = 0;
 static volatile unsigned int right_pressed = 0;
 
-void printString(char* str)
-{
-    while (*str)
-    {
-        UARTCharPut(UART0_BASE, *(str++));
-    }
-    UARTCharPut(UART0_BASE, 13);
-}
-
 void configureButtons(void)
 {
     ButtonsInit();
 }
 
+//GPIO pins for LED as outputs
 void configureLEDS(void)
 {
     PinoutSet(false, false);
@@ -50,23 +42,13 @@ void configureLEDS(void)
     GPIOPinTypeGPIOOutput(CLP_D4_PORT, CLP_D4_PIN);
 }
 
-void configureUART(void)
-{
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-    GPIOPinConfigure(GPIO_PA0_U0RX);
-    GPIOPinConfigure(GPIO_PA1_U0TX);
-    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-    UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
-    UARTConfigSetExpClk(UART0_BASE, 16000000, 9600,
-                        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
-                        UART_CONFIG_PAR_NONE));
-}
 
 //*******************************************************
 // Tasks code
 //*******************************************************
 
+//Make the LED1 turn ON/OFF in 1 second intervals
+// If left button is pressed stops blinking and task E controls functionality
 void vTaskA(void* pvParameters)
 {
     unsigned int val = 1;
@@ -79,6 +61,8 @@ void vTaskA(void* pvParameters)
     }
 }
 
+//Make the LED2 turn ON/OFF in 2 second intervals
+// If right button is pressed stops blinking and task F controls functionality
 void vTaskB(void* pvParameters)
 {
     unsigned int val = 2;
@@ -91,6 +75,7 @@ void vTaskB(void* pvParameters)
     }
 }
 
+//Make the LED3 turn ON/OFF in 3 second intervals
 void vTaskC(void* pvParameters)
 {
     unsigned int val = 4;
@@ -102,6 +87,7 @@ void vTaskC(void* pvParameters)
     }
 }
 
+//Make the LED4 turn ON/OFF in 4 second intervals
 void vTaskD(void* pvParameters)
 {
     unsigned int val = 8;
@@ -113,13 +99,14 @@ void vTaskD(void* pvParameters)
     }
 }
 
+//Handles if left button is pressed
 void vTaskE(void* pvParameters)
 {
     unsigned char ucDelta, ucState;
     while (1)
     {
         ucState = ButtonsPoll(&ucDelta, 0);
-        if ((GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x1) == 0)
+        if ((GPIOPinRead(BUTTONS_GPIO_BASE, USR_SW1 | USR_SW2) & 0x1) == 0) //Reads button value directly
         {
             left_pressed = 1;
             LEDWrite(CLP_D1, 1);
@@ -130,6 +117,7 @@ void vTaskE(void* pvParameters)
     }
 }
 
+//Handles if right button is pressed
 void vTaskF(void* pvParameters)
 {
     unsigned char ucDelta, ucState;
@@ -159,6 +147,8 @@ void vScheduling()
             ucParameterToPass3, ucParameterToPass4, ucParameterToPass5,
             ucParameterToPass6;
     xTaskHandle xHandle1, xHandle2, xHandle3, xHandle4, xHandle5, xHandle6;
+
+    //4 task for blinking LEDs + 2 task for handling buttons functionalities
     xTaskCreate(vTaskA, "TASKA", configMINIMAL_STACK_SIZE, &ucParameterToPass1,
                 tskIDLE_PRIORITY + 1, &xHandle1);
     xTaskCreate(vTaskB, "TASKB", configMINIMAL_STACK_SIZE, &ucParameterToPass2,
@@ -181,7 +171,6 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
-    configureUART();
     configureLEDS();
     configureButtons();
     vScheduling();
