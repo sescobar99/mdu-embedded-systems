@@ -35,6 +35,7 @@ static volatile char empty[BUFFER_SIZE];
 
 static volatile char* reverseLineFeed = "\033[A";
 static volatile int inputCount = 0;
+static volatile int lastInputCountValue = -1;
 
 static volatile SemaphoreHandle_t status_task_sem;
 
@@ -74,7 +75,7 @@ void itos(int number, char* str)
     {
         str[e++] = digits[i--] + '0';
     }
-    str[e] = 0;
+    str[e] = NULL_CHARACTER;
 }
 
 void addElement(char str[], int length, char newElement)
@@ -124,7 +125,6 @@ void vPrintLastChars(void* pvParameters)
 void vStatusTask(void* pvParameters)
 {
     char str[10];
-    int lastInputCountValue = inputCount;
     while (1)
     {
         xSemaphoreTake(status_task_sem, portMAX_DELAY);
@@ -153,6 +153,7 @@ void vActivateAuxTask(void* pvParameters)
                         == 0)
         {
             xSemaphoreGive(status_task_sem);
+            lastInputCountValue = -1;
             vTaskDelay(pdMS_TO_TICKS(10000));
             xSemaphoreTake(status_task_sem, portMAX_DELAY);
             printString("\n");
