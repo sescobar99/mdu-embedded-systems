@@ -27,9 +27,10 @@
 #define CARRIAGE_RETURN 13
 #define SPACE 32
 #define DELETE 127
+#define DELETE_SIZE 30
 
 static volatile char* reverseLineFeed = "\033[A";
-static volatile char empty[50];
+static volatile char empty[DELETE_SIZE];
 
 // Buffer
 static volatile uint32_t pui32Buffer[6];
@@ -250,6 +251,14 @@ void vGatekeeper(void* pvParameters)
     printString("Accelerometer: 0, 0, 0\r\n");
     while (1)
     {
+        printString(reverseLineFeed);
+        printString(reverseLineFeed);
+        printString(reverseLineFeed);
+        printString("Microphone:                        \r\n");
+        printString("Joystick:                          \r\n");
+        printString("Accelerometer:                     \r\n");
+//        printString("\r");
+
         averageMicrophone = 0;
         averageJoystick[0] = 0;
         averageJoystick[1] = 0;
@@ -290,10 +299,14 @@ void vGatekeeper(void* pvParameters)
         averageAccelerometer[2] /= counter;
         counter = 0;
 
-//        printString("Microphone: ");
-//        itos(average[0], str);
-//        printString(str);
-//        printString("\n\r");
+
+        printString(reverseLineFeed);
+        printString(reverseLineFeed);
+        printString(reverseLineFeed);
+        printString("Microphone: ");
+        itos(averageMicrophone, str);
+        printString(str);
+        printString("\n\r");
         // print
         printString("Joystick: ");
         itos(averageJoystick[1], str);
@@ -303,26 +316,23 @@ void vGatekeeper(void* pvParameters)
         printString(str);
         printString("\n\r");
 
-        // print
-        //        printString("Accelerometer: ");
-        //        itos(average[0], str);
-        //        printString(str);
-        //        printString(", ");
-        //        itos(average[1], str);
-        //        printString(str);
-        //        printString(",");
-        //        itos(average[2], str);
-        //        printString(str);
-        //        printString("\r");
+        printString("Accelerometer: ");
+        itos(averageAccelerometer[0], str);
+        printString(str);
+        printString(", ");
+        itos(averageAccelerometer[1], str);
+        printString(str);
+        printString(",");
+        itos(averageAccelerometer[2], str);
+        printString(str);
+        printString("\r");
 
-//        printString(reverseLineFeed);
-//        printString(empty);
 //        printString(reverseLineFeed);
 //        printString(empty);
 //        printString(empty);
 
         averageJoystick0 = 0;
-        vTaskDelay(pdMS_TO_TICKS(400));
+        vTaskDelay(pdMS_TO_TICKS(40));
 
     }
 }
@@ -356,11 +366,11 @@ void vScheduling()
 int main(void)
 {
     int i = 0;
-    for (i = 0; i < 50; i++)
+    for (i = 0; i < DELETE_SIZE; i++)
     {
         empty[i] = SPACE;
     }
-    empty[50 - 1] = NULL_CHARACTER;
+    empty[DELETE_SIZE - 1] = NULL_CHARACTER;
     microphoneQueue = xQueueCreate((unsigned portBASE_TYPE) 8,
                                    (unsigned portBASE_TYPE) (2 * sizeof(int)));
     joystickQueue = xQueueCreate((unsigned portBASE_TYPE) 4,
