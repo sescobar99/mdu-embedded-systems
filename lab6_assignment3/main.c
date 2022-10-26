@@ -43,60 +43,6 @@ struct accelerometerMsg
     int values[3];
 };
 
-// configure ADC
-void configureADC(void)
-{
-    uint32_t pui32Buffer;
-    char str[15];
-    // Enabling peripherals
-    SysCtlClockFreqSet(
-            SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ | SYSCTL_CFG_VCO_480, 16000000);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0))
-    {
-
-    }
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE))
-    {
-
-    }
-    // Configuring pins
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_4);    // Joystick x
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_3);    // Joystick y
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_5);    // Microphone
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_0);    // Accelerometer x
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_1);    // Accelerometer y
-    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_2);    // Accelerometer z
-    // Configure ADC sequencer
-    ADCIntEnable(ADC0_BASE, 3);
-    ADCIntClear(ADC0_BASE, 3);    // Clear ADC Interrupt
-    ADCSequenceDisable(ADC0_BASE, 3);
-    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH1));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH2));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH9));
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-    ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH8);
-    ADCSequenceEnable(ADC0_BASE, 3);
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    while (!ADCIntStatus(ADC0_BASE, 3, false))
-    {
-
-    }
-    printString("Hello\n");
-    ADCSequenceDataGet(ADC0_BASE, 3, &pui32Buffer);
-    itos(pui32Buffer, str);
-    printString(str);
-    printString("\n");
-}
 // configure UART
 void configureUART(void)
 {
@@ -142,6 +88,58 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, CARRIAGE_RETURN);
 }
 
+// configure ADC
+void configureADC(void)
+{
+    // Enabling peripherals
+    SysCtlClockFreqSet(
+    SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ | SYSCTL_CFG_VCO_480,
+                       16000000);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0))
+    {
+
+    }
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE))
+    {
+
+    }
+    // Configuring pins
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_4);    // Joystick x
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_3);    // Joystick y
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_5);    // Microphone
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_0);    // Accelerometer x
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_1);    // Accelerometer y
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_2);    // Accelerometer z
+    // Configure ADC sequencer
+    ADCIntEnable(ADC0_BASE, 3);
+    ADCIntClear(ADC0_BASE, 3);    // Clear ADC Interrupt
+    ADCSequenceDisable(ADC0_BASE, 3);
+    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
+
+    //CH0 Joystick y
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0));
+    //CH9 Joystick x
+    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH9));
+
+    //CH1 CH2 CH3 Accelerometer
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH1));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH2));
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
+
+    //CH8 Microphone
+//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
+//                             ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH8);
+
+    ADCSequenceEnable(ADC0_BASE, 3);
+}
+
 //*******************************************************
 // Tasks code
 //*******************************************************
@@ -151,9 +149,17 @@ void vMicrophoneManager(void* pvParameters)
     char str[15];
     while (1)
     {
+        ADCProcessorTrigger(ADC0_BASE, 3);
+        while (!ADCIntStatus(ADC0_BASE, 3, false))
+        {
+        }
+        ADCSequenceDataGet(ADC0_BASE, 3, &pui32Buffer);
 
+        itos(pui32Buffer, str);
+        printString(str);
     }
 }
+
 void vJoystickManager(void* pvParameters)
 {
     while (1)
@@ -190,7 +196,7 @@ void vScheduling()
                 configMINIMAL_STACK_SIZE, (void* ) 3, tskIDLE_PRIORITY + 1,
                 NULL);
 
-    // Start scheduler
+// Start scheduler
     vTaskStartScheduler();
 }
 
@@ -209,5 +215,6 @@ int main(void)
 
     configureUART(); // Init UART
     configureADC(); // Init ADC
-//    vScheduling(); // Start scheduler
+
+    vScheduling(); // Start scheduler
 }
