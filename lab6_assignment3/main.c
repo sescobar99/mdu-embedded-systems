@@ -31,18 +31,19 @@ static volatile QueueHandle_t microphoneQueue, joystickQueue,
 // mutex
 static volatile SemaphoreHandle_t samplingValuesBinarySem;
 
-struct microphoneMsg
+typedef struct
 {
     uint32_t value;
-};
-struct joystickMsg
+} microphoneMsg;
+
+typedef struct
 {
     uint32_t value[2];
-};
-struct accelerometerMsg
+} joystickMsg;
+typedef struct
 {
     uint32_t value[3];
-};
+} accelerometerMsg;
 
 // configure UART
 void configureUART(void)
@@ -146,7 +147,6 @@ void configureADC(void)
 //*******************************************************
 void vADCSampler(void* pvParameters)
 {
-    char str[15];
     while (1)
     {
         ADCProcessorTrigger(ADC0_BASE, 0);
@@ -210,7 +210,7 @@ void vAccelerometerManager(void* pvParameters)
         xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
         value[0] = pui32Buffer[3];
         value[1] = pui32Buffer[4];
-        value[3] = pui32Buffer[5];
+        value[2] = pui32Buffer[5];
         xSemaphoreGive(samplingValuesBinarySem);
 
         // Send msg to queue
@@ -227,15 +227,22 @@ void vAccelerometerManager(void* pvParameters)
 void vGatekeeper(void* pvParameters)
 {
     uint32_t buffer, average = 0, counter = 0;
+    char str[10];
+    vTaskDelay(pdMS_TO_TICKS(400));
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(40));
-        while (xQueueReceive(semaphoreQueue, &buffer, (TickType_t) 0) == pdPASS)
+        while (xQueueReceive(microphoneQueue, &buffer, (TickType_t) 0) == pdPASS)
         {
             average += buffer;
             counter++;
         }
         average /= counter;
+
+        printString("Microphone: \n");
+        itos(average, str);
+        printString(str);
+        printString("\n");
+//                    printString(reverseLineFeed);
 
         average = 0;
         counter = 0;
@@ -247,7 +254,8 @@ void vGatekeeper(void* pvParameters)
         average /= counter;
         average = 0;
         counter = 0;
-        while (xQueueReceive(accelerometerQueue, &buffer, (TickType_t) 0) == pdPASS)
+        while (xQueueReceive(accelerometerQueue, &buffer, (TickType_t ) 0)
+                == pdPASS)
         {
             average += buffer;
             counter++;
@@ -255,6 +263,7 @@ void vGatekeeper(void* pvParameters)
         average /= counter;
         average = 0;
         counter = 0;
+        vTaskDelay(pdMS_TO_TICKS(400));
     }
 }
 
@@ -268,7 +277,7 @@ void vScheduling()
     xTaskCreate(vADCSampler, "ADCSAMPLER", configMINIMAL_STACK_SIZE, (void* ) 4,
                 tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(vGatekeeper, "GATEKEEPER", configMINIMAL_STACK_SIZE, (void* ) 0,
-                tskIDLE_PRIORITY + 2, NULL);
+                tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(vMicrophoneManager, "MICROPHONE", configMINIMAL_STACK_SIZE,
                 (void* ) 1, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(vJoystickManager, "JOYSTICK", configMINIMAL_STACK_SIZE,
@@ -299,5 +308,6 @@ int main(void)
     configureUART(); // Init UART
     configureADC(); // Init ADC
 
+    xSemaphoreGive(samplingValuesBinarySem);
     vScheduling(); // Start scheduler
 }
