@@ -21,7 +21,15 @@
 #include "drivers/pinout.h"
 #include "driverlib/adc.h"
 
+#define NULL_CHARACTER 0
+#define BACKSPACE 8
+#define LINE_FEED 10
 #define CARRIAGE_RETURN 13
+#define SPACE 32
+#define DELETE 127
+
+static volatile char* reverseLineFeed = "\033[A";
+static volatile char empty[50];
 
 // Buffer
 static volatile uint32_t pui32Buffer[6];
@@ -87,7 +95,7 @@ void printString(char* str)
     {
         UARTCharPut(UART0_BASE, *(str++));
     }
-    UARTCharPut(UART0_BASE, CARRIAGE_RETURN);
+//    UARTCharPut(UART0_BASE, CARRIAGE_RETURN);
 }
 
 // configure ADC
@@ -226,78 +234,96 @@ void vAccelerometerManager(void* pvParameters)
 }
 void vGatekeeper(void* pvParameters)
 {
-    uint32_t average[3] = {0}, counter = 0;
+    uint32_t averageMicrophone;
+    uint32_t averageJoystick[2];
+    uint32_t averageJoystick0;
+    uint32_t averageAccelerometer[3];
+    uint32_t counter;
     microphoneMsg mmsg;
     joystickMsg jmsg;
     accelerometerMsg amsg;
     char str[10];
     vTaskDelay(pdMS_TO_TICKS(400));
+
+    printString("Microphone: 0db\r\n");
+    printString("Joystick: 0, 0\r\n");
+    printString("Accelerometer: 0, 0, 0\r\n");
     while (1)
     {
+        averageMicrophone = 0;
+        averageJoystick[0] = 0;
+        averageJoystick[1] = 0;
+        averageAccelerometer[0] = 0;
+        averageAccelerometer[1] = 0;
+        averageAccelerometer[2] = 0;
+        counter = 0;
+
         while (xQueueReceive(microphoneQueue, &mmsg, (TickType_t) 0) == pdPASS)
         {
-            average[0] += mmsg.value;
+            averageMicrophone += mmsg.value;
             counter++;
         }
-        average[0] /= counter;
-
-        printString("Microphone: \n");
-        itos(average, str);
-        printString(str);
-        printString("\n");
-//                    printString(reverseLineFeed);
-
-        average[0] = 0;
+        averageMicrophone /= counter;
         counter = 0;
+
         while (xQueueReceive(joystickQueue, &jmsg, (TickType_t) 0) == pdPASS)
         {
-            average[0] += jmsg.value[0];
-            average[1] += jmsg.value[1];
+            averageJoystick[0] += jmsg.value[0];
+            averageJoystick[1] += jmsg.value[1];
             counter++;
         }
-        average[0] /= counter;
-        average[1] /= counter;
-        // print
-        printString("Joystick X: \n");
-        itos(average[0], str);
-        printString(str);
-        printString("\n");
-        printString("Joystick Y: \n");
-        itos(average[1], str);
-        printString(str);
-        printString("\n");
-        average[0] = 0;
-        average[1] = 0;
+        averageJoystick[0] /= counter;
+        averageJoystick[1] /= counter;
+        averageJoystick0 = averageJoystick[0];
         counter = 0;
+
         while (xQueueReceive(accelerometerQueue, &amsg, (TickType_t ) 0)
                 == pdPASS)
         {
-            average[0] += amsg.value[0];
-            average[1] += amsg.value[1];
-            average[2] += amsg.value[2];
+            averageAccelerometer[0] += amsg.value[0];
+            averageAccelerometer[1] += amsg.value[1];
+            averageAccelerometer[2] += amsg.value[2];
             counter++;
         }
-        average[0] /= counter;
-        average[1] /= counter;
-        average[2] /= counter;
-        // print
-        printString("Accelerometer X: \n");
-        itos(average[0], str);
-        printString(str);
-        printString("\n");
-        printString("Accelerometer Y: \n");
-        itos(average[1], str);
-        printString(str);
-        printString("\n");
-        printString("Accelerometer Z: \n");
-        itos(average[2], str);
-        printString(str);
-        printString("\n");
-        average[0] = 0;
-        average[1] = 0;
-        average[2] = 0;
+        averageAccelerometer[0] /= counter;
+        averageAccelerometer[1] /= counter;
+        averageAccelerometer[2] /= counter;
         counter = 0;
+
+//        printString("Microphone: ");
+//        itos(average[0], str);
+//        printString(str);
+//        printString("\n\r");
+        // print
+        printString("Joystick: ");
+        itos(averageJoystick[1], str);
+        printString(str);
+        printString(" , ");
+        itos(averageJoystick0, str);
+        printString(str);
+        printString("\n\r");
+
+        // print
+        //        printString("Accelerometer: ");
+        //        itos(average[0], str);
+        //        printString(str);
+        //        printString(", ");
+        //        itos(average[1], str);
+        //        printString(str);
+        //        printString(",");
+        //        itos(average[2], str);
+        //        printString(str);
+        //        printString("\r");
+
+//        printString(reverseLineFeed);
+//        printString(empty);
+//        printString(reverseLineFeed);
+//        printString(empty);
+//        printString(empty);
+
+        averageJoystick0 = 0;
         vTaskDelay(pdMS_TO_TICKS(400));
+
     }
 }
 
@@ -329,6 +355,12 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
+    int i = 0;
+    for (i = 0; i < 50; i++)
+    {
+        empty[i] = SPACE;
+    }
+    empty[50 - 1] = NULL_CHARACTER;
     microphoneQueue = xQueueCreate((unsigned portBASE_TYPE) 8,
                                    (unsigned portBASE_TYPE) (2 * sizeof(int)));
     joystickQueue = xQueueCreate((unsigned portBASE_TYPE) 4,
