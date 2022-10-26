@@ -229,19 +229,10 @@ void vAccelerometerManager(void* pvParameters)
 }
 void vGatekeeper(void* pvParameters)
 {
-<<<<<<< HEAD
     uint32_t average = 0, counter = 0;
 
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(40));
-=======
-    uint32_t buffer, average = 0, counter = 0;
-    char str[10];
-    vTaskDelay(pdMS_TO_TICKS(400));
-    while (1)
-    {
->>>>>>> 078d783309d8fef5043609306b5f6bd1a230c20a
         while (xQueueReceive(microphoneQueue, &buffer, (TickType_t) 0) == pdPASS)
         {
             average += buffer;
