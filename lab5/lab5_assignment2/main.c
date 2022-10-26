@@ -205,7 +205,7 @@ void vTaskB(void* pvParameters)
 
 /*
  * Low priority task
- * Workload: 4 time units
+ * Workload: 8 time units (6 are inside the critical section)
  * Works 1 time unit->Takes Semaphore-> Works 6 time units-> Gives Semaphore -> Works 1 time units-> Checks if deadline was missed
  * Starts after an initial delay of 0 time units
  */
