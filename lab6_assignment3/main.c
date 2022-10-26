@@ -23,24 +23,25 @@
 
 #define CARRIAGE_RETURN 13
 
+// Buffer
+static volatile uint32_t pui32Buffer[6];
 // Queues
 static volatile QueueHandle_t microphoneQueue, joystickQueue,
         accelerometerQueue;
+// mutex
+static volatile SemaphoreHandle_t samplingValuesBinarySem;
 
 struct microphoneMsg
 {
-    int id;
-    int decibelius;
+    uint32_t value;
 };
 struct joystickMsg
 {
-    int id;
-    int values[2];
+    uint32_t value[2];
 };
 struct accelerometerMsg
 {
-    int id;
-    int values[3];
+    uint32_t value[3];
 };
 
 // configure UART
@@ -120,20 +121,20 @@ void configureADC(void)
 
     //CH8 Microphone
     ADCSequenceStepConfigure(ADC0_BASE, 0, 0,
-                             ADC_CTL_CH8);
+    ADC_CTL_CH8);
 
     //CH0 Joystick y
     ADCSequenceStepConfigure(ADC0_BASE, 0, 1,
-                             ADC_CTL_CH0);
+    ADC_CTL_CH0);
     //CH9 Joystick x
     ADCSequenceStepConfigure(ADC0_BASE, 0, 2,
-                             ADC_CTL_CH9);
+    ADC_CTL_CH9);
 
     //CH1 CH2 CH3 Accelerometer
     ADCSequenceStepConfigure(ADC0_BASE, 0, 3,
-                             ADC_CTL_CH1);
+    ADC_CTL_CH1);
     ADCSequenceStepConfigure(ADC0_BASE, 0, 4,
-                             ADC_CTL_CH2);
+    ADC_CTL_CH2);
     ADCSequenceStepConfigure(ADC0_BASE, 0, 5,
                              (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
 
@@ -143,9 +144,8 @@ void configureADC(void)
 //*******************************************************
 // Tasks code
 //*******************************************************
-void vMicrophoneManager(void* pvParameters)
+void vADCSampler(void* pvParameters)
 {
-    uint32_t pui32Buffer[6] = {0};
     char str[15];
     while (1)
     {
@@ -154,26 +154,107 @@ void vMicrophoneManager(void* pvParameters)
         {
         }
         ADCIntClear(ADC0_BASE, 0);
+        xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
         ADCSequenceDataGet(ADC0_BASE, 0, pui32Buffer);
+        xSemaphoreGive(samplingValuesBinarySem);
+    }
+}
+
+void vMicrophoneManager(void* pvParameters)
+{
+    uint32_t value;
+    vTaskDelay(pdMS_TO_TICKS(4));
+    while (1)
+    {
+        xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
+        value = pui32Buffer[0];
+        xSemaphoreGive(samplingValuesBinarySem);
+
+        // Send msg to queue
+        microphoneMsg msg;
+        msg.value = value;
+        xQueueSendToBack(microphoneQueue, (void* ) &msg, portMAX_DELAY);
+
+        // Waits 5 ms
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 
 void vJoystickManager(void* pvParameters)
 {
+    uint32_t value[2];
+    vTaskDelay(pdMS_TO_TICKS(5));
     while (1)
     {
+        xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
+        value[0] = pui32Buffer[1];
+        value[1] = pui32Buffer[2];
+        xSemaphoreGive(samplingValuesBinarySem);
+
+        // Send msg to queue
+        joystickMsg msg;
+        msg.value[0] = value[0];
+        msg.value[1] = value[1];
+        xQueueSendToBack(joystickQueue, (void* ) &msg, portMAX_DELAY);
+
+        // Waits 10 ms
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 void vAccelerometerManager(void* pvParameters)
 {
+    uint32_t value[3];
+    vTaskDelay(pdMS_TO_TICKS(15));
     while (1)
     {
+        xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
+        value[0] = pui32Buffer[3];
+        value[1] = pui32Buffer[4];
+        value[3] = pui32Buffer[5];
+        xSemaphoreGive(samplingValuesBinarySem);
+
+        // Send msg to queue
+        accelerometerMsg msg;
+        msg.value[0] = value[0];
+        msg.value[1] = value[1];
+        msg.value[2] = value[2];
+        xQueueSendToBack(accelerometerQueue, (void* ) &msg, portMAX_DELAY);
+
+        // Waits 20 ms
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
 void vGatekeeper(void* pvParameters)
 {
+    uint32_t buffer, average = 0, counter = 0;
     while (1)
     {
+        vTaskDelay(pdMS_TO_TICKS(40));
+        while (xQueueReceive(semaphoreQueue, &buffer, (TickType_t) 0) == pdPASS)
+        {
+            average += buffer;
+            counter++;
+        }
+        average /= counter;
+
+        average = 0;
+        counter = 0;
+        while (xQueueReceive(joystickQueue, &buffer, (TickType_t) 0) == pdPASS)
+        {
+            average += buffer;
+            counter++;
+        }
+        average /= counter;
+        average = 0;
+        counter = 0;
+        while (xQueueReceive(accelerometerQueue, &buffer, (TickType_t) 0) == pdPASS)
+        {
+            average += buffer;
+            counter++;
+        }
+        average /= counter;
+        average = 0;
+        counter = 0;
     }
 }
 
@@ -184,8 +265,10 @@ void vGatekeeper(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-    xTaskCreate(vGatekeeper, "GATEKEEPER", configMINIMAL_STACK_SIZE, (void* ) 0,
+    xTaskCreate(vADCSampler, "ADCSAMPLER", configMINIMAL_STACK_SIZE, (void* ) 4,
                 tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vGatekeeper, "GATEKEEPER", configMINIMAL_STACK_SIZE, (void* ) 0,
+                tskIDLE_PRIORITY + 2, NULL);
     xTaskCreate(vMicrophoneManager, "MICROPHONE", configMINIMAL_STACK_SIZE,
                 (void* ) 1, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(vJoystickManager, "JOYSTICK", configMINIMAL_STACK_SIZE,
@@ -210,6 +293,8 @@ int main(void)
     accelerometerQueue = xQueueCreate(
             (unsigned portBASE_TYPE) 2,
             (unsigned portBASE_TYPE) (4 * sizeof(int)));
+
+    samplingValuesBinarySem = xSemaphoreCreateBinary(); // Create semaphore
 
     configureUART(); // Init UART
     configureADC(); // Init ADC
