@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
@@ -183,7 +184,7 @@ void vMicrophoneManager(void* pvParameters)
         // Process the value
         value = abs(2024 - value);
         voltage = (5.0f * value) / 2024.0f;
-        db = 20 * log(voltage / lastVoltage);
+        db = 20.0f * log(voltage / lastVoltage);
         lastVoltage = voltage;
 
         // Send msg to queue
@@ -312,6 +313,7 @@ void vGatekeeper(void* pvParameters)
         printString("Microphone: ");
         itos(averageMicrophone, str);
         printString(str);
+        printString("db");
         printString("\n\r");
         // print
         printString("Joystick: ");
