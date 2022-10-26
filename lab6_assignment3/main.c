@@ -113,31 +113,31 @@ void configureADC(void)
     GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_1);    // Accelerometer y
     GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_2);    // Accelerometer z
     // Configure ADC sequencer
-    ADCIntEnable(ADC0_BASE, 3);
-    ADCIntClear(ADC0_BASE, 3);    // Clear ADC Interrupt
-    ADCSequenceDisable(ADC0_BASE, 3);
-    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
-
-    //CH0 Joystick y
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0));
-    //CH9 Joystick x
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH9));
-
-    //CH1 CH2 CH3 Accelerometer
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH1));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH2));
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
+    ADCIntEnable(ADC0_BASE, 0);
+    ADCIntClear(ADC0_BASE, 0);    // Clear ADC Interrupt
+    ADCSequenceDisable(ADC0_BASE, 0);
+    ADCSequenceConfigure(ADC0_BASE, 0, ADC_TRIGGER_PROCESSOR, 0);
 
     //CH8 Microphone
-//    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,
-//                             ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH8);
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 0,
+                             ADC_CTL_CH8);
 
-    ADCSequenceEnable(ADC0_BASE, 3);
+    //CH0 Joystick y
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 1,
+                             ADC_CTL_CH0);
+    //CH9 Joystick x
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 2,
+                             ADC_CTL_CH9);
+
+    //CH1 CH2 CH3 Accelerometer
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 3,
+                             ADC_CTL_CH1);
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 4,
+                             ADC_CTL_CH2);
+    ADCSequenceStepConfigure(ADC0_BASE, 0, 5,
+                             (ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH3));
+
+    ADCSequenceEnable(ADC0_BASE, 0);
 }
 
 //*******************************************************
@@ -145,18 +145,16 @@ void configureADC(void)
 //*******************************************************
 void vMicrophoneManager(void* pvParameters)
 {
-    uint32_t pui32Buffer;
+    uint32_t pui32Buffer[6] = {0};
     char str[15];
     while (1)
     {
-        ADCProcessorTrigger(ADC0_BASE, 3);
-        while (!ADCIntStatus(ADC0_BASE, 3, false))
+        ADCProcessorTrigger(ADC0_BASE, 0);
+        while (!ADCIntStatus(ADC0_BASE, 0, false))
         {
         }
-        ADCSequenceDataGet(ADC0_BASE, 3, &pui32Buffer);
-
-        itos(pui32Buffer, str);
-        printString(str);
+        ADCIntClear(ADC0_BASE, 0);
+        ADCSequenceDataGet(ADC0_BASE, 0, pui32Buffer);
     }
 }
 
