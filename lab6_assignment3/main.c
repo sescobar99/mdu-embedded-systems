@@ -35,10 +35,7 @@ typedef struct
 {
     uint32_t value;
 } microphoneMsg;
-<<<<<<< HEAD
-=======
 
->>>>>>> 078d783309d8fef5043609306b5f6bd1a230c20a
 typedef struct
 {
     uint32_t value[2];
@@ -171,7 +168,7 @@ void vMicrophoneManager(void* pvParameters)
     {
         xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
         value = pui32Buffer[0];
-        xSemaphoreGive(samplingValuesBinarySem);d
+        xSemaphoreGive(samplingValuesBinarySem);
 
         // Send msg to queue
         microphoneMsg msg;
@@ -229,8 +226,9 @@ void vAccelerometerManager(void* pvParameters)
 }
 void vGatekeeper(void* pvParameters)
 {
-    uint32_t average = 0, counter = 0;
-
+    uint32_t buffer, average = 0, counter = 0;
+    char str[10];
+    vTaskDelay(pdMS_TO_TICKS(400));
     while (1)
     {
         while (xQueueReceive(microphoneQueue, &buffer, (TickType_t) 0) == pdPASS)
