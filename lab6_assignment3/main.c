@@ -172,6 +172,7 @@ void vADCSampler(void* pvParameters)
 void vMicrophoneManager(void* pvParameters)
 {
     uint32_t value;
+    double voltage, lastVoltage, db;
     vTaskDelay(pdMS_TO_TICKS(4));
     while (1)
     {
@@ -179,9 +180,15 @@ void vMicrophoneManager(void* pvParameters)
         value = pui32Buffer[0];
         xSemaphoreGive(samplingValuesBinarySem);
 
+        // Process the value
+        value = abs(2024 - value);
+        voltage = (5.0f * value) / 2024.0f;
+        db = 20 * log(voltage / lastVoltage);
+        lastVoltage = voltage;
+
         // Send msg to queue
         microphoneMsg msg;
-        msg.value = value;
+        msg.value = db;
         xQueueSendToBack(microphoneQueue, (void* ) &msg, portMAX_DELAY);
 
         // Waits 5 ms
@@ -298,7 +305,6 @@ void vGatekeeper(void* pvParameters)
         averageAccelerometer[1] /= counter;
         averageAccelerometer[2] /= counter;
         counter = 0;
-
 
         printString(reverseLineFeed);
         printString(reverseLineFeed);
