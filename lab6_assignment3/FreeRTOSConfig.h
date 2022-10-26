@@ -87,7 +87,7 @@
 
 #define configCPU_CLOCK_HZ              SYSTEM_CLOCK
 #define configUSE_TICKLESS_IDLE         0
-#define configTICK_RATE_HZ              ( ( TickType_t ) 10 )
+#define configTICK_RATE_HZ              ( ( TickType_t ) 1000 )
 
 #define configUSE_PREEMPTION            1
 #define configUSE_IDLE_HOOK             0

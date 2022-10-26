@@ -31,18 +31,18 @@ static volatile QueueHandle_t microphoneQueue, joystickQueue,
 // mutex
 static volatile SemaphoreHandle_t samplingValuesBinarySem;
 
-struct microphoneMsg
+typedef struct
 {
     uint32_t value;
-};
-struct joystickMsg
+} microphoneMsg;
+typedef struct
 {
     uint32_t value[2];
-};
-struct accelerometerMsg
+} joystickMsg;
+typedef struct
 {
     uint32_t value[3];
-};
+} accelerometerMsg;
 
 // configure UART
 void configureUART(void)
@@ -168,7 +168,7 @@ void vMicrophoneManager(void* pvParameters)
     {
         xSemaphoreTake(samplingValuesBinarySem, portMAX_DELAY);
         value = pui32Buffer[0];
-        xSemaphoreGive(samplingValuesBinarySem);
+        xSemaphoreGive(samplingValuesBinarySem);d
 
         // Send msg to queue
         microphoneMsg msg;
@@ -226,11 +226,12 @@ void vAccelerometerManager(void* pvParameters)
 }
 void vGatekeeper(void* pvParameters)
 {
-    uint32_t buffer, average = 0, counter = 0;
+    uint32_t average = 0, counter = 0;
+
     while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(40));
-        while (xQueueReceive(semaphoreQueue, &buffer, (TickType_t) 0) == pdPASS)
+        while (xQueueReceive(microphoneQueue, &buffer, (TickType_t) 0) == pdPASS)
         {
             average += buffer;
             counter++;
