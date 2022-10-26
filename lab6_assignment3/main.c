@@ -226,17 +226,20 @@ void vAccelerometerManager(void* pvParameters)
 }
 void vGatekeeper(void* pvParameters)
 {
-    uint32_t buffer, average = 0, counter = 0;
+    uint32_t average[3] = {0}, counter = 0;
+    microphoneMsg mmsg;
+    joystickMsg jmsg;
+    accelerometerMsg amsg;
     char str[10];
     vTaskDelay(pdMS_TO_TICKS(400));
     while (1)
     {
-        while (xQueueReceive(microphoneQueue, &buffer, (TickType_t) 0) == pdPASS)
+        while (xQueueReceive(microphoneQueue, &mmsg, (TickType_t) 0) == pdPASS)
         {
-            average += buffer;
+            average[0] += mmsg.value;
             counter++;
         }
-        average /= counter;
+        average[0] /= counter;
 
         printString("Microphone: \n");
         itos(average, str);
@@ -244,24 +247,55 @@ void vGatekeeper(void* pvParameters)
         printString("\n");
 //                    printString(reverseLineFeed);
 
-        average = 0;
+        average[0] = 0;
         counter = 0;
-        while (xQueueReceive(joystickQueue, &buffer, (TickType_t) 0) == pdPASS)
+        while (xQueueReceive(joystickQueue, &jmsg, (TickType_t) 0) == pdPASS)
         {
-            average += buffer;
+            average[0] += jmsg.value[0];
+            average[1] += jmsg.value[1];
             counter++;
         }
-        average /= counter;
-        average = 0;
+        average[0] /= counter;
+        average[1] /= counter;
+        // print
+        printString("Joystick X: \n");
+        itos(average[0], str);
+        printString(str);
+        printString("\n");
+        printString("Joystick Y: \n");
+        itos(average[1], str);
+        printString(str);
+        printString("\n");
+        average[0] = 0;
+        average[1] = 0;
         counter = 0;
-        while (xQueueReceive(accelerometerQueue, &buffer, (TickType_t ) 0)
+        while (xQueueReceive(accelerometerQueue, &amsg, (TickType_t ) 0)
                 == pdPASS)
         {
-            average += buffer;
+            average[0] += amsg.value[0];
+            average[1] += amsg.value[1];
+            average[2] += amsg.value[2];
             counter++;
         }
-        average /= counter;
-        average = 0;
+        average[0] /= counter;
+        average[1] /= counter;
+        average[2] /= counter;
+        // print
+        printString("Accelerometer X: \n");
+        itos(average[0], str);
+        printString(str);
+        printString("\n");
+        printString("Accelerometer Y: \n");
+        itos(average[1], str);
+        printString(str);
+        printString("\n");
+        printString("Accelerometer Z: \n");
+        itos(average[2], str);
+        printString(str);
+        printString("\n");
+        average[0] = 0;
+        average[1] = 0;
+        average[2] = 0;
         counter = 0;
         vTaskDelay(pdMS_TO_TICKS(400));
     }
