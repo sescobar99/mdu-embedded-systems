@@ -16,6 +16,8 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "inc/tm4c129encpdt.h"
+//add binary semaphore beetwen buffers
+//binary for protecinging uart and buffer
 
 #define BUFFER_SIZE 10
 #define CONSUMERS_NUMBER 5

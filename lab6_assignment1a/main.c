@@ -17,9 +17,12 @@
 #include "inc/tm4c129encpdt.h"
 #include <string.h>
 
+#define BUFFER_SIZE 5
+
 static volatile SemaphoreHandle_t producer_sem, consumer_sem;
 
-static volatile unsigned int buffer;
+static volatile unsigned int buffer[BUFFER_SIZE];
+static volatile unsigned int first, last;
 
 void configureUART(void)
 {
@@ -106,6 +109,8 @@ void vTaskConsumer(void* pvParameters)
 
 void vScheduling()
 {
+    first = 0;
+    last = first;
     // Create tasks
     xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
                 NULL, tskIDLE_PRIORITY + 2, NULL);
