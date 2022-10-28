@@ -24,6 +24,7 @@ static volatile SemaphoreHandle_t producer_sem, consumer_sem, buffer_sem;
 
 static volatile unsigned int buffer[BUFFER_SIZE], top, bottom;
 static volatile unsigned int consumers[CONSUMERS_NUMBER];
+char string[100];
 
 void configureUART(void)
 {
@@ -46,21 +47,33 @@ void printString(char* str, ...)
     }
     UARTCharPut(UART0_BASE, 13);
 }
+unsigned int random(int min, int max)
+{
+    unsigned int randomNumber = 0;
+    randomNumber = (rand() % (max - min + 1)) + min;
+    return randomNumber;
+}
 
 unsigned int produce()
 {
     static unsigned int counter = 0;
-    printString("PRODUCER: Starts production\n");
-    vTaskDelay(pdMS_TO_TICKS(200));
-    printString("PRODUCER: Produces a value\n");
+
+    printString("PRODUCER  : Starts production\n");
+//    vTaskDelay(pdMS_TO_TICKS(1300));
+    vTaskDelay(pdMS_TO_TICKS(random(1000,1500)));
+    sprintf(string, "PRODUCER  : Produces value %d\n", counter + 1);
+    printString(string);
     return ++counter;
 }
 
-void consume()
+void consume(int taskNumber)
 {
-    printString("A CONSUMER: Starts consuming a value\n");
-    vTaskDelay(pdMS_TO_TICKS(3000));
-    printString("A CONSUMER: Finishes consuming a value\n");
+    sprintf(string, "CONSUMER %d: Starts consuming a value\n", taskNumber);
+    printString(string);
+//    vTaskDelay(pdMS_TO_TICKS(3000));
+    vTaskDelay(pdMS_TO_TICKS(random(2500,3500)));
+    sprintf(string, "CONSUMER %d: Finishes consuming a value\n", taskNumber);
+    printString(string);
 }
 
 //*******************************************************
@@ -76,7 +89,8 @@ void vTaskProducer(void* pvParameters)
 
         xSemaphoreTake(producer_sem, portMAX_DELAY); // Wait until there is empty spaces in buffer
         buffer[top] = produced_val; // Insert the value
-        printString("PRODUCER: Puts a value in the buffer\n");
+        sprintf(string, "PRODUCER  : Puts %d in the buffer\n", produced_val);
+        printString(string);
         top = (top + 1) % BUFFER_SIZE;
 
         xSemaphoreGive(consumer_sem); // Give permission to some consumer to keep consuming
@@ -86,6 +100,8 @@ void vTaskProducer(void* pvParameters)
 void vTaskConsumer(void* pvParameters)
 {
     unsigned int value_to_consume;
+    unsigned int taskNumber;
+    taskNumber = (int) pvParameters;
     while (1)
     {
         xSemaphoreTake(consumer_sem, portMAX_DELAY); // Wait until there is elements in buffer
@@ -93,12 +109,14 @@ void vTaskConsumer(void* pvParameters)
         xSemaphoreTake(buffer_sem, portMAX_DELAY); // Waits to access the consumers shared resource
         value_to_consume = buffer[bottom]; // Take the value
         bottom = (bottom + 1) % BUFFER_SIZE; // Move pointer to first in buffer
-        printString("A CONSUMER: Taks a value from the buffer\n");
+        sprintf(string, "CONSUMER %d: Takes %d from the buffer\n", taskNumber,
+                value_to_consume);
+        printString(string);
         xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(producer_sem); // Give permission to producer to keep producing
 
-        consume(); // Consume
+        consume(taskNumber); // Consume
     }
 }
 
@@ -108,11 +126,9 @@ void vTaskConsumer(void* pvParameters)
 
 void vScheduling()
 {
-    // Create tasks
-    static unsigned char ucParameterToPass;
 
-    xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, NULL);
 
     unsigned int i;
     for (i = 0; i < CONSUMERS_NUMBER; i++)

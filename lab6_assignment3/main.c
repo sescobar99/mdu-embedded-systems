@@ -55,6 +55,8 @@ typedef struct
     uint32_t value[3];
 } accelerometerMsg;
 
+char string[300];
+
 // configure UART
 void configureUART(void)
 {
@@ -251,21 +253,18 @@ void vGatekeeper(void* pvParameters)
     microphoneMsg mmsg;
     joystickMsg jmsg;
     accelerometerMsg amsg;
-    char str[10];
     vTaskDelay(pdMS_TO_TICKS(400));
 
-    printString("Microphone: 0db\r\n");
-    printString("Joystick: 0, 0\r\n");
-    printString("Accelerometer: 0, 0, 0\r\n");
+    sprintf(string,
+            "Microphone: %u db    \r\nJoystick: %u, %u     \r\nAccelerometer: %u, %u, %u        \r\n",
+            0, 0, 0, 0, 0, 0);
+    printString(string);
+    vTaskDelay(pdMS_TO_TICKS(2000));
     while (1)
     {
         printString(reverseLineFeed);
         printString(reverseLineFeed);
         printString(reverseLineFeed);
-        printString("Microphone:                        \r\n");
-        printString("Joystick:                          \r\n");
-        printString("Accelerometer:                     \r\n");
-//        printString("\r");
 
         averageMicrophone = 0;
         averageJoystick[0] = 0;
@@ -307,37 +306,12 @@ void vGatekeeper(void* pvParameters)
         averageAccelerometer[2] /= counter;
         counter = 0;
 
-        printString(reverseLineFeed);
-        printString(reverseLineFeed);
-        printString(reverseLineFeed);
-        printString("Microphone: ");
-        itos(averageMicrophone, str);
-        printString(str);
-        printString("db");
-        printString("\n\r");
-        // print
-        printString("Joystick: ");
-        itos(averageJoystick[1], str);
-        printString(str);
-        printString(" , ");
-        itos(averageJoystick0, str);
-        printString(str);
-        printString("\n\r");
-
-        printString("Accelerometer: ");
-        itos(averageAccelerometer[0], str);
-        printString(str);
-        printString(", ");
-        itos(averageAccelerometer[1], str);
-        printString(str);
-        printString(",");
-        itos(averageAccelerometer[2], str);
-        printString(str);
-        printString("\r");
-
-//        printString(reverseLineFeed);
-//        printString(empty);
-//        printString(empty);
+        sprintf(string,
+                "Microphone: %u db    \r\nJoystick: %u, %u     \r\nAccelerometer: %u, %u, %u        \r\n",
+                averageMicrophone, averageJoystick[1], averageJoystick0,
+                averageAccelerometer[0], averageAccelerometer[1],
+                averageAccelerometer[2]);
+        printString(string);
 
         averageJoystick0 = 0;
         vTaskDelay(pdMS_TO_TICKS(40));
