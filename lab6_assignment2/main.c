@@ -78,6 +78,8 @@ void itos(int number, char* str)
     str[e] = NULL_CHARACTER;
 }
 
+// Shift all the values to the left and inserts the new element
+// to the las postion, that will be empty
 void addElement(char str[], int length, char newElement)
 {
     int i;
@@ -112,16 +114,20 @@ void vPrintLastChars(void* pvParameters)
     char inputChar;
     while (1)
     {
-        printString(buffer);
-        while (!UARTCharsAvail(UART0_BASE))
+        printString(buffer); // Prints the letters
+        while (!UARTCharsAvail(UART0_BASE)) // Waits to get obtain a char input
         {
         }
-        inputChar = UARTCharGetNonBlocking(UART0_BASE);
-        inputCount++;
-        addElement(buffer, BUFFER_SIZE, inputChar);
+        inputChar = UARTCharGetNonBlocking(UART0_BASE); // Gets the char input
+        inputCount++; // Increase the chars counter
+        addElement(buffer, BUFFER_SIZE, inputChar); // Add the char to the end of the buffer
     }
 }
 
+/*
+ * When buttons is pressed this function gets called and prints continously the number
+ * of times a key has been pressed.
+ */
 void vStatusTask(void* pvParameters)
 {
     char str[10];
@@ -141,6 +147,11 @@ void vStatusTask(void* pvParameters)
     }
 }
 
+
+/*
+ * Continuously polls buttons. If pressed gives semaphore (allowing status task to print) and delays for 10 seconds
+ * Takes the semaphore again and continues pooling.
+ */
 void vActivateAuxTask(void* pvParameters)
 {
     unsigned char ucDelta, ucState;
@@ -187,10 +198,11 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
+    // Create semaphore
     status_task_sem = xSemaphoreCreateCounting(1, 0);
 
     int i;
-    //Init arrays
+    //Init arrays.  Empty is used for clearing the screen.
     for (i = 0; i < BUFFER_SIZE; i++)
     {
         empty[i] = SPACE;
@@ -199,7 +211,7 @@ int main(void)
     empty[BUFFER_SIZE - 1] = NULL_CHARACTER;
     buffer[BUFFER_SIZE - 1] = NULL_CHARACTER;
 
-    configureButtons();
+    configureButtons(); // Configure buttons
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
 

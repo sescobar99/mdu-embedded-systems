@@ -43,6 +43,7 @@ void printString(char* str)
     UARTCharPut(UART0_BASE, 13);
 }
 
+// Produce a value during a second
 unsigned int produce()
 {
     static unsigned int counter = 0;
@@ -54,6 +55,7 @@ unsigned int produce()
     return ++counter;
 }
 
+// Consume a value during five seconds
 void consume(unsigned int value_to_consume)
 {
     char str[50];
@@ -75,8 +77,9 @@ void vTaskProducer(void* pvParameters)
     {
         produced_val = produce(); // Produce
 
+        // Checking the buffer with polling technique
         while (buffer != 0)
-            vTaskDelay(pdMS_TO_TICKS(100)); // Checking the buffer with pulling technique
+            vTaskDelay(pdMS_TO_TICKS(100));
 
         buffer = produced_val;
     }
@@ -87,12 +90,13 @@ void vTaskConsumer(void* pvParameters)
     unsigned int value_to_consume;
     while (1)
     {
+        // Checking the buffer with polling technique
         while (buffer == 0)
             vTaskDelay(pdMS_TO_TICKS(100));
 
         value_to_consume = buffer;
         buffer = 0;
-        consume(value_to_consume);
+        consume(value_to_consume); // Consume
     }
 }
 
@@ -103,13 +107,10 @@ void vTaskConsumer(void* pvParameters)
 void vScheduling()
 {
     // Create tasks
-    static unsigned char ucParameterToPass1, ucParameterToPass2;
-    xTaskHandle xHandle1, xHandle2;
-
     xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                &ucParameterToPass1, tskIDLE_PRIORITY + 2, &xHandle1);
+                NULL, tskIDLE_PRIORITY + 2, NULL);
     xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
-                &ucParameterToPass2, tskIDLE_PRIORITY + 1, &xHandle2);
+                NULL, tskIDLE_PRIORITY + 1, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -121,8 +122,6 @@ void vScheduling()
 int main(void)
 {
     buffer = 0; // Init buffer
-
-    //bin_sem = xSemaphoreCreateBinary(); // Create semaphore
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler
