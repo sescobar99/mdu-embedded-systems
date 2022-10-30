@@ -17,12 +17,16 @@
 #include "inc/tm4c129encpdt.h"
 #include <string.h>
 
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 100
 
-static volatile SemaphoreHandle_t producer_sem, consumer_sem;
+static volatile TaskHandle_t producerHandle, consumerHandle;
 
 static volatile unsigned int buffer[BUFFER_SIZE];
-static volatile unsigned int first, last;
+static volatile unsigned int top, bottom, bufferCounter;
+
+static volatile unsigned int debugVal;
+
+static volatile char string[100];
 
 void configureUART(void)
 {
@@ -50,23 +54,25 @@ void printString(char* str)
 unsigned int produce()
 {
     static unsigned int counter = 0;
-    printString("PRODUCER: Starts production\n");
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    char str[50];
-    sprintf(str, "PRODUCER: Produces value %u\n", counter);
-    printString(str);
+
+//    printString("PRODUCER: Starts production\n");
+//    vTaskDelay(pdMS_TO_TICKS(50));
+//    char str[50];
+//    sprintf(str, "PRODUCER: Produces value %u\n", counter);
+//    printString(str);
     return ++counter;
 }
 
 // Consume a value during five seconds
 void consume(unsigned int value_to_consume)
 {
-    char str[50];
-    sprintf(str, "CONSUMER: Starts consuming value %u\n", value_to_consume);
-    printString(str);
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    sprintf(str, "CONSUMER: Finishes consuming value %u\n", value_to_consume);
-    printString(str);
+    debugVal++;
+//    char str[50];
+//    sprintf(str, "CONSUMER: Starts consuming value %u\n", value_to_consume);
+//    printString(str);
+//    vTaskDelay(pdMS_TO_TICKS(50));
+//    sprintf(str, "CONSUMER: Finishes consuming value %u\n", value_to_consume);
+//    printString(str);
 }
 
 //*******************************************************
@@ -80,11 +86,18 @@ void vTaskProducer(void* pvParameters)
     {
         produced_val = produce(); // Produce
 
-        // Checking the buffer with polling technique
-        while (buffer != 0)
-            vTaskDelay(pdMS_TO_TICKS(100));
+        if (bufferCounter == BUFFER_SIZE)
+            vTaskSuspend(producerHandle);
 
-        buffer = produced_val;
+        buffer[top] = produced_val; // Insert the value
+//        sprintf(string, "PRODUCER  : Puts %d in the buffer\n", produced_val);
+//        printString(string);
+        top = (top + 1) % BUFFER_SIZE;
+
+        bufferCounter += 1;
+
+        if (bufferCounter == 1)
+            vTaskResume(consumerHandle);
     }
 }
 // CONSUMER
@@ -93,13 +106,35 @@ void vTaskConsumer(void* pvParameters)
     unsigned int value_to_consume;
     while (1)
     {
-        // Checking the buffer with polling technique
-        while (buffer == 0)
-            vTaskDelay(pdMS_TO_TICKS(100));
+        if (bufferCounter == 0)
+            vTaskSuspend(consumerHandle);
 
-        value_to_consume = buffer;
-        buffer = 0;
+        value_to_consume = buffer[bottom]; // Take the value
+        bottom = (bottom + 1) % BUFFER_SIZE; // Move pointer to first in buffer
+//        sprintf(string, "CONSUMER: Takes %d from the buffer\n",
+//                value_to_consume);
+//        printString(string);
+
+        bufferCounter -= 1;
+
+        if (bufferCounter == BUFFER_SIZE - 1)
+            vTaskResume(producerHandle);
+
         consume(value_to_consume); // Consume
+    }
+}
+void vTaskDebug(void* pvParameters)
+{
+    unsigned int value_to_consume;
+    int lastDebugVal = 0;
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(500));
+        if (lastDebugVal < debugVal)
+        {
+            printString("NOT DEADLOCK\n");
+            lastDebugVal = debugVal;
+        }
     }
 }
 
@@ -109,13 +144,18 @@ void vTaskConsumer(void* pvParameters)
 
 void vScheduling()
 {
-    first = 0;
-    last = first;
+    debugVal = 0;
+    top = 0;
+    bottom = top;
+    bufferCounter = 0;
+
     // Create tasks
-    xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE,
-                NULL, tskIDLE_PRIORITY + 2, NULL);
-    xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE,
-                NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(vTaskProducer, "PRODUCER", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, &producerHandle);
+    xTaskCreate(vTaskConsumer, "CONSUMER", configMINIMAL_STACK_SIZE, NULL,
+                tskIDLE_PRIORITY + 1, &consumerHandle);
+    xTaskCreate(vTaskDebug, "DEBUG", configMINIMAL_STACK_SIZE, NULL,
+                    tskIDLE_PRIORITY + 3, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
@@ -126,7 +166,6 @@ void vScheduling()
 //*******************************************************
 int main(void)
 {
-    buffer = 0; // Init buffer
 
     configureUART(); // Init UART
     vScheduling(); // Start scheduler

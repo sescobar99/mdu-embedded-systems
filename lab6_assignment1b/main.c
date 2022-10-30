@@ -90,10 +90,13 @@ void vTaskProducer(void* pvParameters)
         produced_val = produce(); // Produce
 
         xSemaphoreTake(producer_sem, portMAX_DELAY); // Wait until there is empty spaces in buffer
+
+        xSemaphoreTake(buffer_sem, portMAX_DELAY);
         buffer[top] = produced_val; // Insert the value
         sprintf(string, "PRODUCER  : Puts %d in the buffer\n", produced_val);
         printString(string);
         top = (top + 1) % BUFFER_SIZE;
+        xSemaphoreGive(buffer_sem);
 
         xSemaphoreGive(consumer_sem); // Give permission to some consumer to keep consuming
     }
@@ -154,7 +157,7 @@ int main(void)
 
     // Create semaphores
     producer_sem = xSemaphoreCreateCounting(BUFFER_SIZE, BUFFER_SIZE);
-    consumer_sem = xSemaphoreCreateCounting(5, 0);
+    consumer_sem = xSemaphoreCreateCounting(BUFFER_SIZE, 0);
     buffer_sem = xSemaphoreCreateBinary();
 
     xSemaphoreGive(buffer_sem); // Initialize the binary semaphore
